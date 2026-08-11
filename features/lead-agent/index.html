@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StepsAI - LEAD AGENT</title>
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;700&family=Inter:wght@400;500;600&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+  <style>
+    .gsap-fade-up { opacity: 0; transform: translateY(40px); }
+    .gsap-scale-in { opacity: 0; transform: scale(0.9); }
+    
+    .hero-v2 { min-height: 80vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 160px 32px 80px; position: relative; overflow: hidden; }
+    .hero-v2.split-hero { flex-direction: row; text-align: left; max-width: 1300px; margin: 0 auto; gap: 64px; }
+    @media (max-width: 1000px) { .hero-v2.split-hero { flex-direction: column; text-align: center; } }
+    
+    .hero-bg-glow { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80vw; height: 80vw; background: radial-gradient(circle, var(--accent-tint) 0%, rgba(251,252,254,0) 70%); z-index: -1; }
+    .hero-v2 h1 { font-size: clamp(48px, 6vw, 80px); line-height: 1.05; letter-spacing: -2px; font-family: 'Outfit', sans-serif; }
+    .hero-v2 p { font-size: 20px; color: var(--text-secondary); max-width: 720px; line-height: 1.6; }
+    
+    .section-v2 { padding: 112px 32px; max-width: 1400px; margin: 0 auto; }
+    .section-title-v2 { font-size: clamp(36px, 4vw, 54px); letter-spacing: -1px; margin-bottom: 80px; font-family: 'Outfit', sans-serif; text-align: center;}
+    
+    .bento-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; grid-auto-flow: dense; }
+    .bento-card { background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 24px; padding: 48px; position: relative; overflow: hidden; display: flex; flex-direction: column; transition: transform 0.5s cubic-bezier(.16,1,.3,1), border-color 0.5s, box-shadow 0.5s; box-shadow: var(--shadow); }
+    .bento-card:hover { transform: translateY(-8px); border-color: var(--accent); box-shadow: var(--shadow-lg); }
+    .bento-title { font-size: 32px; font-weight: 700; margin-bottom: 16px; font-family: 'Outfit', sans-serif; color: var(--text-primary);}
+    .bento-desc { color: var(--text-secondary); font-size: 16px; line-height: 1.6; }
+    @media (max-width: 992px) { .bento-grid { grid-template-columns: 1fr; } }
+    
+    /* Interactive S09 Accordion */
+    .industries-accordion { max-width: 1200px; margin: 0 auto; display: flex; gap: 16px; height: 500px; }
+    .accordion-panel { position: relative; flex: 1; border-radius: 24px; overflow: hidden; background-size: cover; background-position: center; transition: flex 0.6s cubic-bezier(0.16, 1, 0.3, 1); cursor: pointer; }
+    .accordion-panel::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 100%); transition: opacity 0.4s; }
+    .accordion-panel:hover { flex: 3; }
+    .accordion-content { position: absolute; bottom: 0; left: 0; width: 100%; padding: 32px; color: white; z-index: 2; display: flex; flex-direction: column; justify-content: flex-end; }
+    .accordion-title { font-family: 'Outfit', sans-serif; font-size: 28px; font-weight: 700; margin: 0; white-space: nowrap; }
+    .accordion-desc { font-size: 16px; color: rgba(255,255,255,0.8); margin-top: 12px; line-height: 1.5; opacity: 0; transform: translateY(10px); transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+    .accordion-panel:hover .accordion-desc { opacity: 1; transform: translateY(0); transition-delay: 0.1s; }
+    
+    /* --- THE STEP LINE --- */
+    .step-line-container { position: fixed; top: 0; left: 40px; width: 6px; height: 100%; z-index: 0; pointer-events: none; }
+    .step-line { width: 2px; height: 100%; background: var(--line); position: absolute; left: 2px; }
+    .step-line-progress { width: 2px; height: 0%; background: var(--accent); position: absolute; left: 2px; transition: height 0.1s linear; }
+    
+    /* --- MOCKUP SYSTEM --- */
+    .phone-mockup { width: 340px; height: 640px; background: #fff; border-radius: 48px; box-shadow: 0 32px 80px rgba(0,0,0,0.15), inset 0 0 0 10px #e0e4e8, inset 0 0 0 12px #f4f5f7; position: relative; overflow: hidden; display: flex; flex-direction: column; flex-shrink:0; }
+    .phone-notch { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 120px; height: 28px; background: #e0e4e8; border-radius: 14px; z-index: 10; }
+    
+    .mockup-screen { position: absolute; inset: 12px; border-radius: 36px; overflow: hidden; display: flex; flex-direction: column; background:#fff; z-index:1; opacity:0; }
+    
+    .mockup-header { height: 80px; padding: 40px 16px 12px; display: flex; align-items: center; gap: 12px; font-family: 'Inter', sans-serif; }
+    .mockup-header.whatsapp { background: #008069; color: white; }
+    .mockup-header.instagram { background: #fff; color: #111; border-bottom: 1px solid #efefef; }
+    
+    .mockup-body { flex: 1; padding: 16px; display: flex; flex-direction: column; gap: 12px; background: #EFEAE2; font-family: 'Inter', sans-serif; }
+    .mockup-body.instagram { background: #fff; }
+    
+    .chat-bubble { max-width: 85%; padding: 12px 14px; border-radius: 12px; font-size: 14px; line-height: 1.4; position: relative; }
+    .chat-bubble.in { align-self: flex-start; background: #fff; border-top-left-radius: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); color:#111; }
+    .chat-bubble.out { align-self: flex-end; background: #D9FDD3; border-top-right-radius: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); color:#111; }
+    .chat-bubble.ig-in { background: #efefef; border-radius: 18px; color:#111; }
+    .chat-bubble.ig-out { background: linear-gradient(135deg, #4F5BD5, #962FBF); color: white; border-radius: 18px; }
+    
+    .chat-time { font-size: 10px; color: rgba(0,0,0,0.4); float: right; margin: 8px 0 -4px 8px; }
+    .chat-time.out { color: rgba(0,0,0,0.5); }
+    
+    .receipt-pill { display: inline-flex; align-items: center; justify-content:center; gap: 8px; background: #E9F8F0; border-radius: 8px; padding: 8px 16px; font-family: 'Geist Mono', monospace; font-size: 11px; font-weight: 500; color: #0C1322; letter-spacing: 0.12em; text-transform: uppercase; margin-top: 16px; align-self:center; opacity: 0; transform: scale(0.94); box-shadow:0 4px 12px rgba(11,158,88,0.15); }
+    .receipt-pill .check { color: #0B9E58; font-size: 14px; font-weight: 800; }
+    .receipt-pill span { color: #46536B; }
+    
+    /* Micro Mockups */
+    .micro-mockup { background: #EFEAE2; border-radius: 16px; padding: 16px; margin-top: auto; display: flex; flex-direction: column; gap: 10px; opacity:0.6; transition: 0.3s; transform: translateY(20px); }
+    .bento-card:hover .micro-mockup { opacity: 1; transform: translateY(0); }
+    .micro.instagram { background: #fff; border: 1px solid #efefef; }
+    .micro.website { background: #f7f9fc; border: 1px solid var(--border-subtle); }
+    
+    /* Typing Dots */
+    .typing { display:flex; gap:4px; padding:16px 20px; align-items:center; }
+    .dot { width:6px; height:6px; background:rgba(0,0,0,0.3); border-radius:50%; animation: type 1.4s infinite ease-in-out both; }
+    .dot:nth-child(1) { animation-delay: -0.32s; }
+    .dot:nth-child(2) { animation-delay: -0.16s; }
+    @keyframes type { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
+  </style>
+</head>
+<body>
+  <!-- The Step Line Signature System -->
+  <div class="step-line-container">
+    <div class="step-line"></div>
+    <div class="step-line-progress" id="stepLineProgress"></div>
+  </div>
+<style>.nav-dropdown-wrapper:hover .mega-menu { opacity: 1 !important; visibility: visible !important; transform: translateX(-50%) translateY(0) !important; }.sol-menu:hover .mega-menu { transform: translateX(0) translateY(0) !important; }.res-menu:hover .mega-menu { transform: translateX(0) translateY(0) !important; }</style>
+  <nav class="nav" id="mainNav">
+    <div class="nav-container">
+      <a href="../../index.html" class="nav-logo-area">
+        <div class="nav-logo-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg></div>
+        <div class="nav-logo-text">StepsAI</div>
+      </a>
+      <div class="nav-tabs">
+        <div class="nav-dropdown-wrapper">
+          <a class="nav-tab">Product <span style="font-size: 10px; margin-left: 4px;">▼</span></a>
+          <div class="mega-menu">
+            <div class="mega-grid">
+              <div class="mega-col"><div class="mega-col-title">PRODUCTS</div><a href="../../product/ai-agents/index.html">AI Agents</a><a href="../../product/copilot/index.html">Internal Copilot</a></div>
+              <div class="mega-col"><div class="mega-col-title">WHAT IT DOES</div><a href="../../features/sales-agent/index.html">Sales Agent</a><a href="../../features/lead-agent/index.html">Lead Agent</a><a href="../../features/meetings-agent/index.html">Meetings Agent</a><a href="../../features/support-agent/index.html">Support Agent</a></div>
+              <div class="mega-col"><div class="mega-col-title">PLATFORM</div><a href="../../features/workflows/index.html">Workflows</a><a href="../../features/inbox/index.html">One Inbox</a><a href="../../features/analytics/index.html">Analytics</a><a href="../../integrations/index.html">Integrations</a></div>
+              <div class="mega-col"><div class="mega-col-title">CHANNELS</div><a href="../../channels/website/index.html">Website</a><a href="../../channels/whatsapp/index.html">WhatsApp</a><a href="../../channels/instagram/index.html">Instagram</a><a href="../../channels/standalone-page/index.html">Standalone Page</a></div>
+            </div>
+          </div>
+        </div>
+        <div class="nav-dropdown-wrapper sol-menu">
+          <a class="nav-tab">Solutions <span style="font-size: 10px; margin-left: 4px;">▼</span></a>
+          <div class="mega-menu" style="min-width: 400px; left: 0; transform: translateX(0) translateY(10px);">
+            <div class="mega-grid" style="grid-template-columns: 1fr 1fr;">
+              <div class="mega-col"><div class="mega-col-title">BY INDUSTRY</div><a href="../../solutions/ecommerce/index.html">E-Commerce <span class="mega-badge">Flagship</span></a><a href="../../solutions/saas/index.html">SaaS</a><a href="../../solutions/healthcare/index.html">Healthcare</a><a href="../../solutions/education/index.html">Education</a><a href="../../solutions/real-estate/index.html">Real Estate</a></div>
+              <div class="mega-col"><div class="mega-col-title">BY ROLE</div><a href="../../use-cases/marketing-growth/index.html">Marketing & Growth</a><a href="../../use-cases/sales/index.html">Sales</a><a href="../../use-cases/support-cx/index.html">Support & CX</a><a href="../../use-cases/operations/index.html">Operations</a></div>
+            </div>
+          </div>
+        </div>
+        <a href="../../pricing/index.html" class="nav-tab">Pricing</a>
+        <a href="../../partners/index.html" class="nav-tab">Partner</a>
+        <div class="nav-dropdown-wrapper res-menu">
+          <a class="nav-tab">Resources <span style="font-size: 10px; margin-left: 4px;">▼</span></a>
+          <div class="mega-menu" style="min-width: 300px; left: auto; right: 0; transform: translateX(0) translateY(10px);">
+            <div class="mega-grid" style="grid-template-columns: 1fr 1fr;">
+              <div class="mega-col"><div class="mega-col-title">LEARN</div><a href="../../blog/index.html">Blog</a><a href="../../resources/ai-guides/index.html">AI Guides</a><a href="../../resources/case-studies/index.html">Case Studies</a></div>
+              <div class="mega-col"><div class="mega-col-title">COMPANY</div><a href="../../about/index.html">About</a><a href="../../team/index.html">Team • Careers</a><a href="../../note/index.html">Note • Contact</a></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="nav-right">
+        <a href="../../partners/apply/index.html"><button class="btn-primary">Start free trial</button></a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- S03 CTA Band -->
+  <section class="cta-band">
+    <h2>Somebody is typing right now.</h2>
+    <div style="display:flex; justify-content:center; gap:16px;">
+      <a href="../../partners/apply/index.html"><button class="btn-primary">Start free trial</button></a>
+      <button class="btn-outline">Book a demo</button>
+    </div>
+  </section>
+  <!-- S02 Footer -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-col" style="grid-column: span 2;">
+        <div style="font-weight: 800; font-size: 20px; margin-bottom:16px;">StepsAI</div>
+        <p style="color:var(--text-secondary); font-size:14px; max-width: 250px;">Your AI agent layer for every business. Answer, capture, and close at any hour.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Product</h4>
+        <ul><li><a href="../../product/ai-agents/index.html">AI Agents</a></li><li><a href="../../pricing/index.html">Pricing</a></li></ul>
+      </div>
+      <div class="footer-col">
+        <h4>Solutions</h4>
+        <ul><li><a href="../../solutions/ecommerce/index.html">E-Commerce</a></li><li><a href="../../solutions/real-estate/index.html">Real Estate</a></li></ul>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <ul><li><a href="../../about/index.html">About</a></li><li><a href="../../contact/index.html">Contact</a></li></ul>
+      </div>
+    </div>
+  </footer>
+  <script>
+    gsap.registerPlugin(ScrollTrigger);
+    
+    // Fade up elements
+    gsap.to(".gsap-fade-up", { y: 0, opacity: 1, duration: 1, stagger: 0.15, ease: "power3.out" });
+    gsap.utils.toArray('.gsap-scale-in').forEach(element => {
+      gsap.to(element, {
+        scrollTrigger: { trigger: element, start: "top 85%", toggleActions: "play none none reverse" },
+        scale: 1, opacity: 1, duration: 0.8, ease: "power3.out"
+      });
+    });
+    
+    // The Step Line signature animation
+    const stepProgress = document.getElementById('stepLineProgress');
+    if(stepProgress) {
+      window.addEventListener('scroll', () => {
+        const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+        const progress = (window.scrollY / docHeight) * 100;
+        stepProgress.style.height = progress + "%";
+      });
+    }
+
+    // Hero Conversation Animation GSAP Timeline
+    if(document.getElementById('screen-wa')) {
+        let tl = gsap.timeline({ repeat: -1, repeatDelay: 2 });
+        
+        // WhatsApp Flow
+        tl.to(".stp-t1", { display: "none", duration: 0.1 }, "+=1")
+          .to(".stp-2", { display: "block", duration: 0.1 })
+          .to(".stp-3", { opacity: 1, y: 0, duration: 0.4, ease: "back.out" }, "+=0.8")
+          .to(".stp-t2", { display: "flex", duration: 0.1 })
+          .to(".stp-t2", { display: "none", duration: 0.1 }, "+=1.2")
+          .to(".stp-4", { display: "block", duration: 0.1 })
+          .to(".stp-5", { opacity: 1, scale: 1, duration: 0.5, ease: "back.out(1.5)" }, "+=0.5")
+          
+          // Switch to Instagram
+          .to("#screen-wa", { opacity: 0, duration: 0.5, ease: "power2.inOut" }, "+=3")
+          .to("#screen-ig", { opacity: 1, zIndex: 3, duration: 0.5, ease: "power2.inOut" }, "<")
+          
+          // Instagram Flow
+          .to(".stp-ig-t1", { display: "none", duration: 0.1 }, "+=1")
+          .to(".stp-ig-2", { display: "block", duration: 0.1 })
+          .to(".stp-ig-3", { opacity: 1, y: 0, duration: 0.4, ease: "back.out" }, "+=0.8")
+          .to(".stp-ig-t2", { display: "flex", duration: 0.1 })
+          .to(".stp-ig-t2", { display: "none", duration: 0.1 }, "+=1.2")
+          .to(".stp-ig-4", { display: "block", duration: 0.1 })
+          .to(".stp-ig-5", { opacity: 1, scale: 1, duration: 0.5, ease: "back.out(1.5)" }, "+=0.5")
+          
+          // Reset back to WhatsApp for loop
+          .to("#screen-ig", { opacity: 0, duration: 0.5, ease: "power2.inOut" }, "+=3")
+          .to("#screen-wa", { opacity: 1, zIndex: 3, duration: 0.5, ease: "power2.inOut" }, "<")
+          
+          // Clear internal states
+          .set([".stp-2", ".stp-4", ".stp-ig-2", ".stp-ig-4", ".stp-t2", ".stp-ig-t2"], { display: "none" })
+          .set([".stp-t1", ".stp-ig-t1"], { display: "flex" })
+          .set([".stp-3", ".stp-5", ".stp-ig-3", ".stp-ig-5"], { opacity: 0, scale: 0.94, y: 10 });
+    }
+  </script>
+</body>
+</html>

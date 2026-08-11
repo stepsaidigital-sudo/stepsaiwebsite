@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StepsAI - HOME</title>
+  <link rel="stylesheet" href="./assets/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;700&family=Inter:wght@400;500;600&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+  <style>
+    .gsap-fade-up { opacity: 0; transform: translateY(40px); }
+    .gsap-scale-in { opacity: 0; transform: scale(0.9); }
+    
+    .hero-v2 { min-height: 80vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 160px 32px 80px; position: relative; overflow: hidden; }
+    .hero-v2.split-hero { flex-direction: row; text-align: left; max-width: 1300px; margin: 0 auto; gap: 64px; }
+    @media (max-width: 1000px) { .hero-v2.split-hero { flex-direction: column; text-align: center; } }
+    
+    .hero-bg-glow { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80vw; height: 80vw; background: radial-gradient(circle, var(--accent-tint) 0%, rgba(251,252,254,0) 70%); z-index: -1; }
+    .hero-v2 h1 { font-size: clamp(48px, 6vw, 80px); line-height: 1.05; letter-spacing: -2px; font-family: 'Outfit', sans-serif; }
+    .hero-v2 p { font-size: 20px; color: var(--text-secondary); max-width: 720px; line-height: 1.6; }
+    
+    .section-v2 { padding: 112px 32px; max-width: 1400px; margin: 0 auto; }
+    .section-title-v2 { font-size: clamp(36px, 4vw, 54px); letter-spacing: -1px; margin-bottom: 80px; font-family: 'Outfit', sans-serif; text-align: center;}
+    
+    .bento-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; grid-auto-flow: dense; }
+    .bento-card { background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 24px; padding: 48px; position: relative; overflow: hidden; display: flex; flex-direction: column; transition: transform 0.5s cubic-bezier(.16,1,.3,1), border-color 0.5s, box-shadow 0.5s; box-shadow: var(--shadow); }
+    .bento-card:hover { transform: translateY(-8px); border-color: var(--accent); box-shadow: var(--shadow-lg); }
+    .bento-title { font-size: 32px; font-weight: 700; margin-bottom: 16px; font-family: 'Outfit', sans-serif; color: var(--text-primary);}
+    .bento-desc { color: var(--text-secondary); font-size: 16px; line-height: 1.6; }
+    @media (max-width: 992px) { .bento-grid { grid-template-columns: 1fr; } }
+    
+    /* Interactive S09 Accordion */
+    .industries-accordion { max-width: 1200px; margin: 0 auto; display: flex; gap: 16px; height: 500px; }
+    .accordion-panel { position: relative; flex: 1; border-radius: 24px; overflow: hidden; background-size: cover; background-position: center; transition: flex 0.6s cubic-bezier(0.16, 1, 0.3, 1); cursor: pointer; }
+    .accordion-panel::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 100%); transition: opacity 0.4s; }
+    .accordion-panel:hover { flex: 3; }
+    .accordion-content { position: absolute; bottom: 0; left: 0; width: 100%; padding: 32px; color: white; z-index: 2; display: flex; flex-direction: column; justify-content: flex-end; }
+    .accordion-title { font-family: 'Outfit', sans-serif; font-size: 28px; font-weight: 700; margin: 0; white-space: nowrap; }
+    .accordion-desc { font-size: 16px; color: rgba(255,255,255,0.8); margin-top: 12px; line-height: 1.5; opacity: 0; transform: translateY(10px); transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+    .accordion-panel:hover .accordion-desc { opacity: 1; transform: translateY(0); transition-delay: 0.1s; }
+    
+    /* --- THE STEP LINE --- */
+    .step-line-container { position: fixed; top: 0; left: 40px; width: 6px; height: 100%; z-index: 0; pointer-events: none; }
+    .step-line { width: 2px; height: 100%; background: var(--line); position: absolute; left: 2px; }
+    .step-line-progress { width: 2px; height: 0%; background: var(--accent); position: absolute; left: 2px; transition: height 0.1s linear; }
+    
+    /* --- MOCKUP SYSTEM --- */
+    .phone-mockup { width: 340px; height: 640px; background: #fff; border-radius: 48px; box-shadow: 0 32px 80px rgba(0,0,0,0.15), inset 0 0 0 10px #e0e4e8, inset 0 0 0 12px #f4f5f7; position: relative; overflow: hidden; display: flex; flex-direction: column; flex-shrink:0; }
+    .phone-notch { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 120px; height: 28px; background: #e0e4e8; border-radius: 14px; z-index: 10; }
+    
+    .mockup-screen { position: absolute; inset: 12px; border-radius: 36px; overflow: hidden; display: flex; flex-direction: column; background:#fff; z-index:1; opacity:0; }
+    
+    .mockup-header { height: 80px; padding: 40px 16px 12px; display: flex; align-items: center; gap: 12px; font-family: 'Inter', sans-serif; }
+    .mockup-header.whatsapp { background: #008069; color: white; }
+    .mockup-header.instagram { background: #fff; color: #111; border-bottom: 1px solid #efefef; }
+    
+    .mockup-body { flex: 1; padding: 16px; display: flex; flex-direction: column; gap: 12px; background: #EFEAE2; font-family: 'Inter', sans-serif; }
+    .mockup-body.instagram { background: #fff; }
+    
+    .chat-bubble { max-width: 85%; padding: 12px 14px; border-radius: 12px; font-size: 14px; line-height: 1.4; position: relative; }
+    .chat-bubble.in { align-self: flex-start; background: #fff; border-top-left-radius: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); color:#111; }
+    .chat-bubble.out { align-self: flex-end; background: #D9FDD3; border-top-right-radius: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); color:#111; }
+    .chat-bubble.ig-in { background: #efefef; border-radius: 18px; color:#111; }
+    .chat-bubble.ig-out { background: linear-gradient(135deg, #4F5BD5, #962FBF); color: white; border-radius: 18px; }
+    
+    .chat-time { font-size: 10px; color: rgba(0,0,0,0.4); float: right; margin: 8px 0 -4px 8px; }
+    .chat-time.out { color: rgba(0,0,0,0.5); }
+    
+    .receipt-pill { display: inline-flex; align-items: center; justify-content:center; gap: 8px; background: #E9F8F0; border-radius: 8px; padding: 8px 16px; font-family: 'Geist Mono', monospace; font-size: 11px; font-weight: 500; color: #0C1322; letter-spacing: 0.12em; text-transform: uppercase; margin-top: 16px; align-self:center; opacity: 0; transform: scale(0.94); box-shadow:0 4px 12px rgba(11,158,88,0.15); }
+    .receipt-pill .check { color: #0B9E58; font-size: 14px; font-weight: 800; }
+    .receipt-pill span { color: #46536B; }
+    
+    /* Micro Mockups */
+    .micro-mockup { background: #EFEAE2; border-radius: 16px; padding: 16px; margin-top: auto; display: flex; flex-direction: column; gap: 10px; opacity:0.6; transition: 0.3s; transform: translateY(20px); }
+    .bento-card:hover .micro-mockup { opacity: 1; transform: translateY(0); }
+    .micro.instagram { background: #fff; border: 1px solid #efefef; }
+    .micro.website { background: #f7f9fc; border: 1px solid var(--border-subtle); }
+    
+    /* Typing Dots */
+    .typing { display:flex; gap:4px; padding:16px 20px; align-items:center; }
+    .dot { width:6px; height:6px; background:rgba(0,0,0,0.3); border-radius:50%; animation: type 1.4s infinite ease-in-out both; }
+    .dot:nth-child(1) { animation-delay: -0.32s; }
+    .dot:nth-child(2) { animation-delay: -0.16s; }
+    @keyframes type { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
+  </style>
+</head>
+<body>
+  <!-- The Step Line Signature System -->
+  <div class="step-line-container">
+    <div class="step-line"></div>
+    <div class="step-line-progress" id="stepLineProgress"></div>
+  </div>
+<style>.nav-dropdown-wrapper:hover .mega-menu { opacity: 1 !important; visibility: visible !important; transform: translateX(-50%) translateY(0) !important; }.sol-menu:hover .mega-menu { transform: translateX(0) translateY(0) !important; }.res-menu:hover .mega-menu { transform: translateX(0) translateY(0) !important; }</style>
+  <nav class="nav" id="mainNav">
+    <div class="nav-container">
+      <a href="./index.html" class="nav-logo-area">
+        <div class="nav-logo-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg></div>
+        <div class="nav-logo-text">StepsAI</div>
+      </a>
+      <div class="nav-tabs">
+        <div class="nav-dropdown-wrapper">
+          <a class="nav-tab">Product <span style="font-size: 10px; margin-left: 4px;">▼</span></a>
+          <div class="mega-menu">
+            <div class="mega-grid">
+              <div class="mega-col"><div class="mega-col-title">PRODUCTS</div><a href="./product/ai-agents/index.html">AI Agents</a><a href="./product/copilot/index.html">Internal Copilot</a></div>
+              <div class="mega-col"><div class="mega-col-title">WHAT IT DOES</div><a href="./features/sales-agent/index.html">Sales Agent</a><a href="./features/lead-agent/index.html">Lead Agent</a><a href="./features/meetings-agent/index.html">Meetings Agent</a><a href="./features/support-agent/index.html">Support Agent</a></div>
+              <div class="mega-col"><div class="mega-col-title">PLATFORM</div><a href="./features/workflows/index.html">Workflows</a><a href="./features/inbox/index.html">One Inbox</a><a href="./features/analytics/index.html">Analytics</a><a href="./integrations/index.html">Integrations</a></div>
+              <div class="mega-col"><div class="mega-col-title">CHANNELS</div><a href="./channels/website/index.html">Website</a><a href="./channels/whatsapp/index.html">WhatsApp</a><a href="./channels/instagram/index.html">Instagram</a><a href="./channels/standalone-page/index.html">Standalone Page</a></div>
+            </div>
+          </div>
+        </div>
+        <div class="nav-dropdown-wrapper sol-menu">
+          <a class="nav-tab">Solutions <span style="font-size: 10px; margin-left: 4px;">▼</span></a>
+          <div class="mega-menu" style="min-width: 400px; left: 0; transform: translateX(0) translateY(10px);">
+            <div class="mega-grid" style="grid-template-columns: 1fr 1fr;">
+              <div class="mega-col"><div class="mega-col-title">BY INDUSTRY</div><a href="./solutions/ecommerce/index.html">E-Commerce <span class="mega-badge">Flagship</span></a><a href="./solutions/saas/index.html">SaaS</a><a href="./solutions/healthcare/index.html">Healthcare</a><a href="./solutions/education/index.html">Education</a><a href="./solutions/real-estate/index.html">Real Estate</a></div>
+              <div class="mega-col"><div class="mega-col-title">BY ROLE</div><a href="./use-cases/marketing-growth/index.html">Marketing & Growth</a><a href="./use-cases/sales/index.html">Sales</a><a href="./use-cases/support-cx/index.html">Support & CX</a><a href="./use-cases/operations/index.html">Operations</a></div>
+            </div>
+          </div>
+        </div>
+        <a href="./pricing/index.html" class="nav-tab">Pricing</a>
+        <a href="./partners/index.html" class="nav-tab">Partner</a>
+        <div class="nav-dropdown-wrapper res-menu">
+          <a class="nav-tab">Resources <span style="font-size: 10px; margin-left: 4px;">▼</span></a>
+          <div class="mega-menu" style="min-width: 300px; left: auto; right: 0; transform: translateX(0) translateY(10px);">
+            <div class="mega-grid" style="grid-template-columns: 1fr 1fr;">
+              <div class="mega-col"><div class="mega-col-title">LEARN</div><a href="./blog/index.html">Blog</a><a href="./resources/ai-guides/index.html">AI Guides</a><a href="./resources/case-studies/index.html">Case Studies</a></div>
+              <div class="mega-col"><div class="mega-col-title">COMPANY</div><a href="./about/index.html">About</a><a href="./team/index.html">Team • Careers</a><a href="./note/index.html">Note • Contact</a></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="nav-right">
+        <a href="./partners/apply/index.html"><button class="btn-primary">Start free trial</button></a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- S01 Landing Hero - Animated Mockup -->
+  <section class="hero-v2 split-hero">
+    <div class="hero-bg-glow"></div>
+    <div style="flex:1;">
+      <span class="kicker gsap-fade-up" style="font-family: 'Geist Mono', monospace; font-size: 11px; font-weight: 500; color: var(--accent); letter-spacing: .24em; text-transform: uppercase; margin-bottom: 24px; display:block;">AI AGENT FOR SALES & SUPPORT</span>
+      <h1 class="gsap-fade-up" style="margin-bottom: 24px;">It answers.<br>Then it acts.</h1>
+      <p class="gsap-fade-up" style="margin-bottom: 48px;">StepsAI answers customer questions on WhatsApp, Instagram and your website. Then it books the meeting, saves the lead, or updates the order. Nobody on your team has to be awake for it.</p>
+      <div class="hero-actions gsap-fade-up" style="display:flex; gap:16px;">
+        <a href="./partners/apply/index.html"><button class="btn-primary" style="padding: 16px 32px; font-size: 18px;">Start free trial</button></a>
+        <button class="btn-outline" style="padding: 16px 32px; font-size: 18px;">Book a demo</button>
+      </div>
+      <div class="gsap-fade-up" style="margin-top:24px; font-size:14px; color:var(--text-tertiary);">Works with Shopify, HubSpot, Calendly and your inbox.</div>
+    </div>
+    
+    <div class="hero-mockup-wrapper gsap-scale-in" style="flex:1; display:flex; justify-content:center; align-items:center;">
+      <div class="phone-mockup">
+        <div class="phone-notch"></div>
+        
+        <!-- Screen 1: WhatsApp -->
+        <div class="mockup-screen" id="screen-wa" style="opacity:1; z-index:2;">
+          <div class="mockup-header whatsapp">
+            <div style="width:36px; height:36px; border-radius:50%; background:#fff; display:flex; align-items:center; justify-content:center; color:#008069; font-weight:800; font-size:18px;">S</div>
+            <div style="line-height:1.2; font-weight:600; font-size:15px;">StepsAI<br><span style="font-size:12px; font-weight:400; opacity:0.8;">Online</span></div>
+          </div>
+          <div class="mockup-body">
+            <div class="chat-bubble in stp-1">Do you have the linen shirt in medium? <span class="chat-time">10:42 PM</span></div>
+            <div class="chat-bubble out typing stp-t1"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+            <div class="chat-bubble out stp-2" style="display:none;">Yes, two left in medium. Want me to hold one? <span class="chat-time out">10:42 PM</span></div>
+            <div class="chat-bubble in stp-3" style="opacity:0; transform:translateY(10px);">Yes please <span class="chat-time">10:43 PM</span></div>
+            <div class="chat-bubble out typing stp-t2" style="display:none;"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+            <div class="chat-bubble out stp-4" style="display:none;">Reserved and added to your cart.<br><b style="display:block; margin-top:8px; padding-top:8px; border-top:1px solid rgba(0,0,0,0.1);">Linen Shirt · Medium · ₹2,400</b> <span class="chat-time out">10:43 PM</span></div>
+            
+            <div class="receipt-pill stp-5"><span class="check">✓</span> <span>SHOPIFY</span> · CART UPDATED</div>
+          </div>
+        </div>
+        
+        <!-- Screen 2: Instagram -->
+        <div class="mockup-screen" id="screen-ig" style="opacity:0; z-index:1;">
+          <div class="mockup-header instagram">
+            <div style="width:36px; height:36px; border-radius:50%; background:linear-gradient(135deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); padding:2px; display:flex; align-items:center; justify-content:center;"><div style="width:100%; height:100%; background:#fff; border-radius:50%;"></div></div>
+            <div style="line-height:1.2; font-weight:600; font-size:15px; color:#111;">StepsAI Real Estate<br><span style="font-size:12px; font-weight:400; color:#888;">StepsAI Real Estate</span></div>
+          </div>
+          <div class="mockup-body instagram">
+            <div class="chat-bubble in ig-in stp-ig-1">Is the 3BHK still available? <span class="chat-time">9:15 PM</span></div>
+            <div class="chat-bubble out ig-out typing stp-ig-t1"><div class="dot" style="background:rgba(255,255,255,0.5);"></div><div class="dot" style="background:rgba(255,255,255,0.5);"></div><div class="dot" style="background:rgba(255,255,255,0.5);"></div></div>
+            <div class="chat-bubble out ig-out stp-ig-2" style="display:none;">It is. Want to see it this weekend? <span class="chat-time out" style="color:rgba(255,255,255,0.7);">9:15 PM</span></div>
+            <div class="chat-bubble in ig-in stp-ig-3" style="opacity:0; transform:translateY(10px);">Saturday works <span class="chat-time">9:16 PM</span></div>
+            <div class="chat-bubble out ig-out typing stp-ig-t2" style="display:none;"><div class="dot" style="background:rgba(255,255,255,0.5);"></div><div class="dot" style="background:rgba(255,255,255,0.5);"></div><div class="dot" style="background:rgba(255,255,255,0.5);"></div></div>
+            <div class="chat-bubble out ig-out stp-ig-4" style="display:none;">Booked for Saturday 11 AM. Sending the address.<br><div style="display:flex; gap:8px; margin-top:8px;"><span style="background:rgba(255,255,255,0.2); padding:4px 8px; border-radius:8px; font-size:12px;">Sat 11:00</span><span style="background:rgba(255,255,255,0.2); padding:4px 8px; border-radius:8px; font-size:12px;">Sat 4:00</span></div><span class="chat-time out" style="color:rgba(255,255,255,0.7);">9:16 PM</span></div>
+            
+            <div class="receipt-pill stp-ig-5"><span class="check">✓</span> <span>CALENDAR</span> · VISIT BOOKED</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+        <section class="section-v2" style="background: var(--bg-surface-2);">
+            <h2 class="section-title-v2 gsap-fade-up">Four Agents</h2>
+        <div class="bento-grid">
+                <div class="bento-card gsap-scale-in">
+                    <h3 class="bento-title" style="font-size: 24px; margin-bottom: 16px;"></h3>
+                    <p class="bento-desc" style="font-size:16px;"><strong>FOUR AGENTS, ONE BRAIN</strong> # Four jobs. One memory. Your support agent knows what your sales agent promised yesterday. That sounds obvious until you have used four separate tools that all forgot. <strong>Sales Agent</strong> Checks what is actually in stock before it promises anything, then closes. <strong>Lead Agent</strong> Finds out budget and timeline the way a good salesperson would, then writes it into your CRM. <strong>Meetings Agent</strong> Offers times that are genuinely free, and puts the meeting in your calendar. <strong>Support Agent</strong> Tracks the order, explains the return policy, and only wakes you if something is actually wrong. ---</p>
+                    
+                </div></div></section>
+  <!-- S09 Interactive Industries Accordion -->
+  <section class="section-v2" style="background: var(--bg-surface-2);">
+    <div style="text-align: center; margin-bottom: 64px;">
+      <span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: var(--text-secondary); letter-spacing: .2em; text-transform: uppercase;">BUILT AROUND YOUR BUSINESS</span>
+      <h2 style="font-family: 'Outfit'; font-size: 48px; margin-top: 16px; color: var(--text-primary);">Made for the way your customers buy.</h2>
+    </div>
+    
+    <div class="industries-accordion gsap-fade-up">
+      <a href="./solutions/ecommerce/index.html" class="accordion-panel" style="background-image: url('https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=800&q=80'); text-decoration:none;">
+        <div class="accordion-content">
+          <h3 class="accordion-title">Ecommerce</h3>
+          <p class="accordion-desc">Checks live stock before it promises anything. Recovers the cart before the customer forgets.</p>
+        </div>
+      </a>
+      <a href="./solutions/saas/index.html" class="accordion-panel" style="background-image: url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80'); text-decoration:none;">
+        <div class="accordion-content">
+          <h3 class="accordion-title">SaaS & Tech</h3>
+          <p class="accordion-desc">Answers integration questions from your own docs. Compares plans without pushing the expensive one.</p>
+        </div>
+      </a>
+      <a href="./solutions/healthcare/index.html" class="accordion-panel" style="background-image: url('https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800&q=80'); text-decoration:none;">
+        <div class="accordion-content">
+          <h3 class="accordion-title">Healthcare & Wellness</h3>
+          <p class="accordion-desc">Shows which doctor is free. Books the appointment inside the conversation. Sends the reminder so the slot isn't wasted.</p>
+        </div>
+      </a>
+      <a href="./solutions/real-estate/index.html" class="accordion-panel" style="background-image: url('https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800&q=80'); text-decoration:none;">
+        <div class="accordion-content">
+          <h3 class="accordion-title">Real Estate</h3>
+          <p class="accordion-desc">Qualifies the buyer before anyone picks up the phone. Books the site visit while they're still looking.</p>
+        </div>
+      </a>
+    </div>
+  </section>
+
+        <section class="section-v2" style="background: var(--bg-surface-2);">
+            <h2 class="section-title-v2 gsap-fade-up">Channels</h2>
+        <div class="bento-grid">
+                        <div class="bento-card gsap-scale-in">
+                            <h3 class="bento-title" style="font-size: 24px; margin-bottom: 16px;"></h3>
+                            <p class="bento-desc" style="font-size:16px;"><strong>EVERY CHANNEL</strong> # On Instagram it replies in public, then finishes the sale in private. A comment under a post and a WhatsApp message at midnight are not the same kind of conversation. Your agent treats them differently, because your customers do. <strong>Instagram</strong></p>
+                            
+                        </div>
+                        <div class="bento-card gsap-scale-in">
+                            <h3 class="bento-title" style="font-size: 24px; margin-bottom: 16px;">The comment nobody had time to answer.</h3>
+                            <p class="bento-desc" style="font-size:16px;">Someone asks the price under your post. Your agent replies where everyone can see it, slides into the DM, and finishes the conversation there. A scripted chatbot cannot do this, because it needs a customer to start the conversation first. <strong>WhatsApp</strong></p>
+                            
+                        </div>
+                        <div class="bento-card gsap-scale-in">
+                            <h3 class="bento-title" style="font-size: 24px; margin-bottom: 16px;">Where your customers already spend their evening.</h3>
+                            <p class="bento-desc" style="font-size:16px;">Booking links, payment links, delivery updates, all inside the app they already have open. Broadcasts only go to people who asked to hear from you. <strong>Website</strong></p>
+                            
+                        </div>
+                <div class="bento-card gsap-scale-in">
+                    <h3 class="bento-title" style="font-size: 24px; margin-bottom: 16px;">It knows which page they are standing on.</h3>
+                    <p class="bento-desc" style="font-size:16px;">Someone asks "does this come in blue" while looking at a specific jacket. Your agent knows which jacket. It answers about that one, and captures the lead without sending anyone to a form. ---</p>
+                    
+                </div></div></section>
+        <section class="section-v2" style="background: var(--bg-surface-2);">
+            <h2 class="section-title-v2 gsap-fade-up">Setup</h2>
+        <div class="bento-grid">
+                <div class="bento-card gsap-scale-in">
+                    <h3 class="bento-title" style="font-size: 24px; margin-bottom: 16px;"></h3>
+                    <p class="bento-desc" style="font-size:16px;"><strong>LIVE IN AN AFTERNOON</strong> # Paste your website link. That is genuinely the hard part. Your agent reads your pages and works out what you sell. You check it, change the greeting so it sounds like you, and switch on the channels you want. Most people are finished before their coffee goes cold. <strong>Teach it</strong> Paste the link. It reads your site and learns your products, your prices, and your policies. <strong>Make it yours</strong> Pick the name, the colour, and the first thing it says. Keep changing the tone until it sounds like someone who works for you. <strong>Connect it</strong> Shopify, your calendar, your CRM, your inbox. Each one you connect gives your agent something new it can actually do rather than just talk about. <strong>Go live</strong> Try to trip it up first. When you cannot, switch on your channels. ---</p>
+                    
+                </div></div></section>
+        <section class="section-v2" style="background: var(--bg-surface-2);">
+            <h2 class="section-title-v2 gsap-fade-up">Workflows</h2>
+        <div class="bento-grid">
+                <div class="bento-card gsap-scale-in">
+                    <h3 class="bento-title" style="font-size: 24px; margin-bottom: 16px;"></h3>
+                    <p class="bento-desc" style="font-size:16px;"><strong>AUTOMATED WORKFLOWS</strong> # Most sales do not die from a no. They die from silence. Somebody fills a cart and then their food arrives. A lead asks one question and disappears for a week. Your agent notices the gap, waits the right amount of time, and starts the conversation up again. <strong>Recover carts</strong> *(default)* Cart left behind · ₹2,400 → Wait 30 minutes → Check, order still not placed → Send a WhatsApp message → Answer whatever is holding them up, share the checkout <strong>Follow up leads</strong> New lead captured → Check whether it is worth your time → Save to CRM → Send a short follow-up → Offer times that are actually free <strong>Remind customers</strong> Meeting booked → Wait until the day before → Send the reminder → Let them confirm or move it without ringing anyone <strong>Re-engage</strong> Quiet for 30 days → Work out which group they belong to → Send something they would actually care about → Handle the replies → Track who came back *Everything here is labelled `Example workflow`.* ---</p>
+                    
+                </div></div></section>
+        <section class="section-v2" style="background: var(--bg-surface-2);">
+            <h2 class="section-title-v2 gsap-fade-up">One Inbox</h2>
+        <div class="bento-grid">
+                <div class="bento-card gsap-scale-in">
+                    <h3 class="bento-title" style="font-size: 24px; margin-bottom: 16px;"></h3>
+                    <p class="bento-desc" style="font-size:16px;"><strong>YOU STAY IN CONTROL</strong> # It never sends a message you cannot read. Every conversation, from every channel, lands in one inbox. Jump in whenever you feel like it and your agent goes quiet on that thread until you are finished. You decide what it is allowed to answer. You decide where it has to stop. Every conversation is there to read. When it hands over, the whole history comes with it. ---</p>
+                    
+                </div></div></section>
+        <section class="section-v2" style="background: var(--bg-surface-2);">
+            <h2 class="section-title-v2 gsap-fade-up">Analytics</h2>
+        <div class="bento-grid">
+                <div class="bento-card gsap-scale-in">
+                    <h3 class="bento-title" style="font-size: 24px; margin-bottom: 16px;"></h3>
+                    <p class="bento-desc" style="font-size:16px;"><strong>SEE WHAT IT DID</strong> # A paragraph, not a dashboard. Most analytics tell you a number moved. Yours tells you that three people asked for something you do not stock yet. <strong>The weekly summary</strong> *(labelled `Example account`)* This week your agent handled 412 conversations. It answered 358 on its own, booked 24 meetings, and passed 30 to your team. Three customers asked about a product you do not stock yet. <strong>Underneath, small:</strong> Every number on this page comes from a real account or is clearly marked as an example. We do not publish numbers we cannot show you. *That second line is a promise. Once it is live, every other number on the site has to survive being asked about. See the list at the end.* ---</p>
+                    
+                </div></div></section>
+        <section class="section-v2" style="background: var(--bg-surface-2);">
+            <h2 class="section-title-v2 gsap-fade-up">Internal Copilot</h2>
+        <div class="bento-grid">
+                <div class="bento-card gsap-scale-in">
+                    <h3 class="bento-title" style="font-size: 24px; margin-bottom: 16px;"></h3>
+                    <p class="bento-desc" style="font-size:16px;"><strong>INTERNAL COPILOT</strong> # The same brain, pointed inwards. Your team asks it where the leave policy lives, what you agreed with that client in March, which version of the deck is the current one. It looks through everything you have connected, answers, and shows you exactly which document it got that from. `See Internal Copilot →` ---</p>
+                    
+                </div></div></section>
+        <section class="section-v2" style="background: var(--bg-surface-2);">
+            <h2 class="section-title-v2 gsap-fade-up">Who this is for</h2>
+        <div class="bento-grid">
+                <div class="bento-card gsap-scale-in">
+                    <h3 class="bento-title" style="font-size: 24px; margin-bottom: 16px;"></h3>
+                    <p class="bento-desc" style="font-size:16px;"><strong>HONEST FIT</strong> # You might not need this. Some businesses are better off without it, and it is cheaper for both of us if you work that out now rather than in month three. <strong>Worth trying if</strong> People are messaging you on WhatsApp, Instagram or your website in real numbers. You are losing sales because nobody replied fast enough. You answer the same handful of questions every day and have started to resent them. You want to decide what the AI is allowed to say. <strong>Probably not, if</strong> You want an AI running loose with nobody checking on it. You are hoping to let your support team go. You expect it to work properly without anyone setting it up. ---</p>
+                    
+                </div></div></section>
+        <section class="section-v2" style="background: var(--bg-surface-2);">
+            <h2 class="section-title-v2 gsap-fade-up">FAQ</h2>
+        <div style="max-width: 800px; margin: 0 auto;">
+                        <div class="gsap-fade-up" style="background: var(--bg-surface); padding: 32px; border-radius: 16px; margin-bottom: 16px; border: 1px solid var(--border-subtle);">
+                            <h3 style="font-family: 'Outfit'; font-size: 20px; margin-bottom: 12px;">Is this just a chatbot?</h3>
+                            <p style="color: var(--text-secondary); line-height: 1.5; margin:0;">No. A chatbot picks an answer off a list. Your agent checks live stock, books a real slot in your calendar, writes the lead into your CRM, and pulls up an actual order. When it tells a customer something is reserved, it is reserved.</p>
+                        </div>
+                        <div class="gsap-fade-up" style="background: var(--bg-surface); padding: 32px; border-radius: 16px; margin-bottom: 16px; border: 1px solid var(--border-subtle);">
+                            <h3 style="font-family: 'Outfit'; font-size: 20px; margin-bottom: 12px;">Will it sound like a robot?</h3>
+                            <p style="color: var(--text-secondary); line-height: 1.5; margin:0;">Only if you write like one. You set the greeting, the tone, and the things it is never allowed to say. Most people spend ten minutes on this and never open it again.</p>
+                        </div>
+                        <div class="gsap-fade-up" style="background: var(--bg-surface); padding: 32px; border-radius: 16px; margin-bottom: 16px; border: 1px solid var(--border-subtle);">
+                            <h3 style="font-family: 'Outfit'; font-size: 20px; margin-bottom: 12px;">Do I need a developer?</h3>
+                            <p style="color: var(--text-secondary); line-height: 1.5; margin:0;">No. If you can set up a business account on Instagram, you can do this.</p>
+                        </div>
+                        <div class="gsap-fade-up" style="background: var(--bg-surface); padding: 32px; border-radius: 16px; margin-bottom: 16px; border: 1px solid var(--border-subtle);">
+                            <h3 style="font-family: 'Outfit'; font-size: 20px; margin-bottom: 12px;">What if it does not know something?</h3>
+                            <p style="color: var(--text-secondary); line-height: 1.5; margin:0;">It says so and hands the conversation to your team with the full history attached. It will not invent an answer to sound clever.</p>
+                        </div>
+                        <div class="gsap-fade-up" style="background: var(--bg-surface); padding: 32px; border-radius: 16px; margin-bottom: 16px; border: 1px solid var(--border-subtle);">
+                            <h3 style="font-family: 'Outfit'; font-size: 20px; margin-bottom: 12px;">Can I see what it is saying to customers?</h3>
+                            <p style="color: var(--text-secondary); line-height: 1.5; margin:0;">All of it. Nothing happens in a window you cannot open.</p>
+                        </div>
+                        <div class="gsap-fade-up" style="background: var(--bg-surface); padding: 32px; border-radius: 16px; margin-bottom: 16px; border: 1px solid var(--border-subtle);">
+                            <h3 style="font-family: 'Outfit'; font-size: 20px; margin-bottom: 12px;">What happens when I want to take over?</h3>
+                            <p style="color: var(--text-secondary); line-height: 1.5; margin:0;">You start typing and it stops. It stays out of that conversation until you are done with it.</p>
+                        </div>
+                        <div class="gsap-fade-up" style="background: var(--bg-surface); padding: 32px; border-radius: 16px; margin-bottom: 16px; border: 1px solid var(--border-subtle);">
+                            <h3 style="font-family: 'Outfit'; font-size: 20px; margin-bottom: 12px;">Which languages does it speak?</h3>
+                            <p style="color: var(--text-secondary); line-height: 1.5; margin:0;">It answers in whatever language your customer writes in. `[VERIFY: confirm supported language count before publishing]`</p>
+                        </div>
+                <div class="gsap-fade-up" style="background: var(--bg-surface); padding: 32px; border-radius: 16px; margin-bottom: 16px; border: 1px solid var(--border-subtle);">
+                    <h3 style="font-family: 'Outfit'; font-size: 20px; margin-bottom: 12px;">How long before it is live?</h3>
+                    <p style="color: var(--text-secondary); line-height: 1.5; margin:0;">Most people are running the same afternoon. `[VERIFY: confirm typical time, not fastest]` ---</p>
+                </div></div></section>
+        <section class="section-v2" style="background: var(--bg-surface-2);">
+            <h2 class="section-title-v2 gsap-fade-up">Closing CTA</h2>
+        <div class="bento-grid">
+                <div class="bento-card gsap-scale-in">
+                    <h3 class="bento-title" style="font-size: 24px; margin-bottom: 16px;"></h3>
+                    <p class="bento-desc" style="font-size:16px;">*The only dark section on the site.* # Somebody is typing right now. Set it up this afternoon. Find out what it did over breakfast. `Start free trial`  ·  `Book a demo` No credit card. Live in under an hour.  `[VERIFY]` *Behind the text, drifting slowly and very faintly, the receipts from the whole page: `CART UPDATED · MEETING BOOKED · LEAD CREATED · ORDER TRACKED · TICKET RESOLVED`* *This closes the loop the hero opened. The page starts at 11:47 last night and ends with breakfast tomorrow.* ---</p>
+                    
+                </div></div></section>
+        <section class="section-v2" style="background: var(--bg-surface-2);">
+            <h2 class="section-title-v2 gsap-fade-up">Footer</h2>
+        <div class="bento-grid">
+                <div class="bento-card gsap-scale-in">
+                    <h3 class="bento-title" style="font-size: 24px; margin-bottom: 16px;"></h3>
+                    <p class="bento-desc" style="font-size:16px;">Your AI agent layer for every business --- ---</p>
+                    
+                </div></div></section>
+  <!-- S03 CTA Band -->
+  <section class="cta-band">
+    <h2>Somebody is typing right now.</h2>
+    <div style="display:flex; justify-content:center; gap:16px;">
+      <a href="./partners/apply/index.html"><button class="btn-primary">Start free trial</button></a>
+      <button class="btn-outline">Book a demo</button>
+    </div>
+  </section>
+  <!-- S02 Footer -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-col" style="grid-column: span 2;">
+        <div style="font-weight: 800; font-size: 20px; margin-bottom:16px;">StepsAI</div>
+        <p style="color:var(--text-secondary); font-size:14px; max-width: 250px;">Your AI agent layer for every business. Answer, capture, and close at any hour.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Product</h4>
+        <ul><li><a href="./product/ai-agents/index.html">AI Agents</a></li><li><a href="./pricing/index.html">Pricing</a></li></ul>
+      </div>
+      <div class="footer-col">
+        <h4>Solutions</h4>
+        <ul><li><a href="./solutions/ecommerce/index.html">E-Commerce</a></li><li><a href="./solutions/real-estate/index.html">Real Estate</a></li></ul>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <ul><li><a href="./about/index.html">About</a></li><li><a href="./contact/index.html">Contact</a></li></ul>
+      </div>
+    </div>
+  </footer>
+  <script>
+    gsap.registerPlugin(ScrollTrigger);
+    
+    // Fade up elements
+    gsap.to(".gsap-fade-up", { y: 0, opacity: 1, duration: 1, stagger: 0.15, ease: "power3.out" });
+    gsap.utils.toArray('.gsap-scale-in').forEach(element => {
+      gsap.to(element, {
+        scrollTrigger: { trigger: element, start: "top 85%", toggleActions: "play none none reverse" },
+        scale: 1, opacity: 1, duration: 0.8, ease: "power3.out"
+      });
+    });
+    
+    // The Step Line signature animation
+    const stepProgress = document.getElementById('stepLineProgress');
+    if(stepProgress) {
+      window.addEventListener('scroll', () => {
+        const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+        const progress = (window.scrollY / docHeight) * 100;
+        stepProgress.style.height = progress + "%";
+      });
+    }
+
+    // Hero Conversation Animation GSAP Timeline
+    if(document.getElementById('screen-wa')) {
+        let tl = gsap.timeline({ repeat: -1, repeatDelay: 2 });
+        
+        // WhatsApp Flow
+        tl.to(".stp-t1", { display: "none", duration: 0.1 }, "+=1")
+          .to(".stp-2", { display: "block", duration: 0.1 })
+          .to(".stp-3", { opacity: 1, y: 0, duration: 0.4, ease: "back.out" }, "+=0.8")
+          .to(".stp-t2", { display: "flex", duration: 0.1 })
+          .to(".stp-t2", { display: "none", duration: 0.1 }, "+=1.2")
+          .to(".stp-4", { display: "block", duration: 0.1 })
+          .to(".stp-5", { opacity: 1, scale: 1, duration: 0.5, ease: "back.out(1.5)" }, "+=0.5")
+          
+          // Switch to Instagram
+          .to("#screen-wa", { opacity: 0, duration: 0.5, ease: "power2.inOut" }, "+=3")
+          .to("#screen-ig", { opacity: 1, zIndex: 3, duration: 0.5, ease: "power2.inOut" }, "<")
+          
+          // Instagram Flow
+          .to(".stp-ig-t1", { display: "none", duration: 0.1 }, "+=1")
+          .to(".stp-ig-2", { display: "block", duration: 0.1 })
+          .to(".stp-ig-3", { opacity: 1, y: 0, duration: 0.4, ease: "back.out" }, "+=0.8")
+          .to(".stp-ig-t2", { display: "flex", duration: 0.1 })
+          .to(".stp-ig-t2", { display: "none", duration: 0.1 }, "+=1.2")
+          .to(".stp-ig-4", { display: "block", duration: 0.1 })
+          .to(".stp-ig-5", { opacity: 1, scale: 1, duration: 0.5, ease: "back.out(1.5)" }, "+=0.5")
+          
+          // Reset back to WhatsApp for loop
+          .to("#screen-ig", { opacity: 0, duration: 0.5, ease: "power2.inOut" }, "+=3")
+          .to("#screen-wa", { opacity: 1, zIndex: 3, duration: 0.5, ease: "power2.inOut" }, "<")
+          
+          // Clear internal states
+          .set([".stp-2", ".stp-4", ".stp-ig-2", ".stp-ig-4", ".stp-t2", ".stp-ig-t2"], { display: "none" })
+          .set([".stp-t1", ".stp-ig-t1"], { display: "flex" })
+          .set([".stp-3", ".stp-5", ".stp-ig-3", ".stp-ig-5"], { opacity: 0, scale: 0.94, y: 10 });
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,1473 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Steps AI - Multi-Industry Agent Suite</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- FontAwesome 6.4 CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        darkBg: '#08080A',
+                        cardBg: '#1C1C24',
+                    },
+                    boxShadow: {
+                        'soft-glow': '0 10px 40px -10px rgba(0, 0, 0, 0.5)',
+                        'card-clean': '0 4px 20px rgba(0, 0, 0, 0.08)',
+                        'card-dark': '0 4px 20px rgba(0, 0, 0, 0.35)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        :root {
+            --theme-color: #3B82F6; /* Default Blue */
+            --theme-bg-light: #EFF6FF;
+            --theme-bg-gradient: linear-gradient(135deg, #2563EB, #3B82F6);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #08080A;
+            color: #F1F5F9;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Scrollbar */
+        .widget-scrollbar::-webkit-scrollbar { width: 4px; }
+        .widget-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .widget-scrollbar::-webkit-scrollbar-thumb { background: rgba(156, 163, 175, 0.3); border-radius: 9999px; }
+        .dark .widget-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.15); }
+        
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        @keyframes popupSlide {
+            0% { opacity: 0; transform: translateY(16px) scale(0.98); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .animate-popup { animation: popupSlide 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+        @keyframes chatBubble {
+            0% { opacity: 0; transform: translateY(8px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        .animate-bubble { animation: chatBubble 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+        @keyframes bottomSheetUp {
+            0% { transform: translateY(100%); }
+            100% { transform: translateY(0); }
+        }
+        .animate-bottom-sheet { animation: bottomSheetUp 0.35s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+
+        /* Dynamic Theme Classes */
+        .dynamic-bg { background: var(--theme-color); }
+        .dynamic-text { color: var(--theme-color); }
+        .dynamic-gradient { background: var(--theme-bg-gradient); }
+        .dynamic-pill-bg { background-color: var(--theme-bg-light); color: var(--theme-color); }
+        .dark .dynamic-pill-bg { background-color: rgba(255, 255, 255, 0.1); color: #fff; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-white/20">
+
+    <!-- TOP PRESENTER NAVBAR -->
+    <header class="w-full bg-[#121218] border-b border-white/10 px-6 py-3 sticky top-0 z-40 flex items-center justify-between text-xs shadow-md">
+        <div class="flex items-center space-x-3">
+            <div class="w-8 h-8 rounded-xl bg-white text-[#121218] flex items-center justify-center font-black text-sm">S</div>
+            <div>
+                <span class="font-bold text-sm text-white block">STEPS AI SUITE</span>
+                <span class="text-[10px] text-slate-400">Industry AI Agents</span>
+            </div>
+        </div>
+
+        <!-- Industry Switcher -->
+        <div class="hidden md:flex items-center space-x-2 bg-[#1C1C24] p-1 rounded-xl border border-white/5">
+            <button onclick="switchIndustry('healthcare')" id="btnIndHealthcare" class="ind-btn px-4 py-1.5 rounded-lg font-semibold transition-all flex items-center space-x-2 bg-blue-600 text-white">
+                <i class="fa-solid fa-stethoscope"></i> <span>Healthcare</span>
+            </button>
+            <button onclick="switchIndustry('edtech')" id="btnIndEdtech" class="ind-btn px-4 py-1.5 rounded-lg font-semibold transition-all text-slate-400 hover:text-white flex items-center space-x-2">
+                <i class="fa-solid fa-graduation-cap"></i> <span>EdTech</span>
+            </button>
+            <button onclick="switchIndustry('realestate')" id="btnIndRealestate" class="ind-btn px-4 py-1.5 rounded-lg font-semibold transition-all text-slate-400 hover:text-white flex items-center space-x-2">
+                <i class="fa-solid fa-building"></i> <span>Real Estate</span>
+            </button>
+            <button onclick="switchIndustry('hotels')" id="btnIndHotels" class="ind-btn px-4 py-1.5 rounded-lg font-semibold transition-all text-slate-400 hover:text-white flex items-center space-x-2">
+                <i class="fa-solid fa-plane"></i> <span>Travel</span>
+            </button>
+            
+            <!-- Retail Dropdown Menu -->
+            <div class="relative group">
+                <button onclick="switchIndustry('retail')" id="btnIndRetail" class="ind-btn px-4 py-1.5 rounded-lg font-semibold transition-all text-slate-400 hover:text-white flex items-center space-x-2">
+                    <i class="fa-solid fa-cart-shopping"></i> <span>Retail</span>
+                    <i class="fa-solid fa-chevron-down text-[10px] ml-1 opacity-70"></i>
+                </button>
+                
+                <!-- Hover Popup -->
+                <div class="absolute top-full right-0 mt-2 w-56 bg-[#1C1C24] border border-white/10 rounded-2xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.8)] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-[100] overflow-hidden">
+                    <div class="px-3 py-2 border-b border-white/5 bg-white/5">
+                        <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">E-Commerce Verticals</span>
+                    </div>
+                    <button onclick="switchIndustry('retail_food')" class="w-full text-left px-4 py-3 text-xs text-slate-300 hover:text-white hover:bg-white/5 hover:border-l-2 hover:border-amber-500 transition-all flex items-center space-x-3">
+                        <span class="text-amber-500 text-lg">🍱</span> 
+                        <div class="flex flex-col"><span class="font-bold">Gourmet Sweets</span><span class="text-[9px] text-slate-500">Portion sizes & freshness</span></div>
+                    </button>
+                    <button onclick="switchIndustry('retail_shoes')" class="w-full text-left px-4 py-3 text-xs text-slate-300 hover:text-white hover:bg-white/5 hover:border-l-2 hover:border-blue-500 transition-all flex items-center space-x-3">
+                        <span class="text-blue-500 text-lg">👟</span> 
+                        <div class="flex flex-col"><span class="font-bold">Shoes & Apparel</span><span class="text-[9px] text-slate-500">Sizes & color swatches</span></div>
+                    </button>
+                    <button onclick="switchIndustry('retail_tech')" class="w-full text-left px-4 py-3 text-xs text-slate-300 hover:text-white hover:bg-white/5 hover:border-l-2 hover:border-sky-500 transition-all flex items-center space-x-3">
+                        <span class="text-sky-500 text-lg">🎧</span> 
+                        <div class="flex flex-col"><span class="font-bold">Tech & Audio</span><span class="text-[9px] text-slate-500">Storage & specs</span></div>
+                    </button>
+                    <button onclick="switchIndustry('retail_beauty')" class="w-full text-left px-4 py-3 text-xs text-slate-300 hover:text-white hover:bg-white/5 hover:border-l-2 hover:border-pink-500 transition-all flex items-center space-x-3">
+                        <span class="text-pink-500 text-lg">✨</span> 
+                        <div class="flex flex-col"><span class="font-bold">Beauty & Skincare</span><span class="text-[9px] text-slate-500">Volume & skin types</span></div>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Layout Dropdown (Global) -->
+        <div class="flex items-center space-x-3">
+            <div class="flex items-center space-x-1 bg-[#1C1C24] p-1.5 rounded-xl border border-white/5">
+                <span class="text-[10px] text-slate-400 uppercase font-semibold px-2">Layout:</span>
+                <select id="globalLayoutSelect" onchange="changeLayout(this.value)" class="bg-[#272732] text-xs text-white font-medium px-2 py-1 rounded-lg border border-white/10 focus:outline-none cursor-pointer">
+                    <option value="horizontal">Horizontal List</option>
+                    <option value="horizontal_variant">Horizontal List (image_1058eb)</option>
+                    <option value="shelf">Shelf Carousel</option>
+                    <option value="standard">Standard Grid</option>
+                    <option value="detailed">Detailed Card</option>
+                </select>
+            </div>
+        </div>
+    </header>
+
+    <main class="w-full flex-1 relative flex items-center justify-center overflow-hidden">
+        <div class="absolute inset-0 z-0">
+            <img id="heroBgImage" src="https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=1600&q=80" class="w-full h-full object-cover opacity-30">
+            <div class="absolute inset-0 bg-gradient-to-t from-[#08080A] via-[#08080A]/80 to-transparent"></div>
+        </div>
+        
+        <div class="z-10 text-center space-y-4 max-w-2xl px-6">
+            <div class="inline-block px-4 py-1.5 rounded-full border border-white/20 bg-white/5 backdrop-blur-sm text-xs font-bold text-white tracking-widest uppercase" id="heroBadge">
+                HEALTHCARE AGENT ACTIVE
+            </div>
+            <h1 class="text-4xl sm:text-6xl font-black text-white tracking-tight leading-tight" id="heroTitle">
+                Automate Patient<br><span class="dynamic-text">Appointments & Care</span>
+            </h1>
+            <p class="text-slate-300 text-sm sm:text-base" id="heroDesc">
+                Reduce front-desk load by guiding patients to the right treatments and doctors instantly via conversational AI.
+            </p>
+        </div>
+    </main>
+
+    <!-- INTERACTIVE COMPANION CTA -->
+    <div id="floatingRobotCTA" class="fixed bottom-6 right-6 z-[60] flex items-center space-x-3 cursor-pointer group" onclick="openChartboardModal()" onmouseenter="if(window.companionAgent) companionAgent.setState('HOVER')" onmouseleave="if(window.companionAgent) companionAgent.resetIdle()">
+        <!-- Slide-in Tooltip -->
+        <div id="companionTooltip" class="px-4 py-2.5 bg-white dark:bg-[#22222E] border border-slate-200 dark:border-white/10 rounded-2xl shadow-xl text-[13px] font-bold text-slate-700 dark:text-white opacity-0 group-hover:opacity-100 transform translate-x-4 group-hover:translate-x-0 transition-all duration-300 pointer-events-none flex items-center">
+            👋 Tap me! I'm here to help
+        </div>
+        
+        <!-- Companion Bubble -->
+        <div id="companionBubble" class="relative w-16 h-16 bg-gradient-to-tr from-slate-900 to-slate-800 rounded-full shadow-[0_10px_40px_-10px_rgba(0,0,0,0.8)] flex items-center justify-center transition-all duration-500 z-10 border-2 border-white/10 overflow-hidden group-hover:-translate-y-2 group-hover:scale-110">
+            <!-- Ambient Glow inside the bubble -->
+            <div id="companionGlow" class="absolute inset-0 bg-[var(--theme-color)] opacity-20 mix-blend-screen blur-md transition-all duration-700"></div>
+            
+            <!-- Particle Container (for Zz, sparkles, etc.) -->
+            <div id="companionParticles" class="absolute -top-4 w-full flex justify-center pointer-events-none font-bold text-white text-xs opacity-0 transition-opacity duration-300"></div>
+
+            <!-- Face / Expression -->
+            <div id="companionFace" class="relative z-10 w-full h-full flex items-center justify-center transition-transform duration-300">
+                <svg viewBox="0 0 100 100" class="w-12 h-12 overflow-visible">
+                    <!-- Heart -->
+                    <path d="M 80 15 A 5 5 0 0 0 90 15 A 5 5 0 0 0 100 15 Q 100 25 90 35 Q 80 25 80 15 Z" fill="#1E293B" id="companionHeart" class="transition-opacity duration-300 opacity-0 transform -translate-y-2 scale-50" />
+                    
+                    <!-- Glasses Outline (Cute Stepca Logo) -->
+                    <!-- Left Shape -->
+                    <path d="M 28 27 A 18 18 0 1 0 40 58 L 40 48 L 47 48 L 47 42" stroke="#111827" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+                    <!-- Right Shape -->
+                    <path d="M 72 63 A 18 18 0 1 0 60 32 L 60 42 L 53 42 L 53 48" stroke="#111827" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+                    
+                    <!-- Pupils -->
+                    <g id="companionPupils" class="transition-transform duration-75">
+                        <path id="pupilLeft" d="M 22 45 Q 28 38 34 45" stroke="#111827" stroke-width="6" stroke-linecap="round" fill="none" class="transition-all duration-300" />
+                        <path id="pupilRight" d="M 66 45 Q 72 38 78 45" stroke="#111827" stroke-width="6" stroke-linecap="round" fill="none" class="transition-all duration-300" />
+                    </g>
+                    
+                    <!-- Mouth -->
+                    <path id="companionMouth" d="M 45 70 L 55 70" stroke="#111827" stroke-width="6" stroke-linecap="round" fill="none" class="transition-all duration-300" />
+                </svg>
+            </div>
+            
+            <!-- Notification Badge -->
+            <div id="companionBadge" class="absolute -top-1 -right-1 w-5 h-5 bg-rose-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-slate-900 hidden">1</div>
+        </div>
+    </div>
+
+    <!-- MAIN CHARTBOARD WIDGET -->
+    <div id="chartboardContainer" class="fixed right-3 sm:right-6 top-[5vh] bottom-[5vh] h-[90vh] max-h-[90vh] w-[calc(100vw-24px)] sm:w-[420px] z-50 flex flex-col bg-slate-50 dark:bg-[#121218] rounded-[2rem] shadow-2xl overflow-hidden transition-all duration-300 animate-popup hidden border border-slate-200 dark:border-white/10">
+
+        <!-- ACTIVE CHAT HEADER (Shown only in Chat Tab) -->
+        <div id="chatHeader" class="hidden px-4 py-3 bg-white dark:bg-[#1A1A22] flex items-center justify-between border-b border-slate-200 dark:border-white/10 shrink-0 z-20">
+            <div class="flex items-center space-x-2.5">
+                <button onclick="switchWidgetTab('home')" class="text-slate-500 hover:text-slate-800 dark:text-slate-300 dark:hover:text-white p-1 text-xs">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </button>
+                <div class="w-8 h-8 rounded-full dynamic-bg text-white flex items-center justify-center font-bold text-xs shadow-sm">
+                    <i class="fa-solid fa-sparkles"></i>
+                </div>
+                <div>
+                    <span class="font-bold text-xs text-slate-800 dark:text-white block" id="widgetChatTitle">CareWell AI</span>
+                    <span class="text-[9px] text-emerald-500 font-medium flex items-center">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block mr-1"></span> Online
+                    </span>
+                </div>
+            </div>
+            <div class="flex items-center space-x-1 text-slate-500 dark:text-slate-400 relative">
+                <button onclick="toggleTheme()" class="p-2 hover:text-slate-800 dark:hover:text-white transition-colors" title="Toggle Theme">
+                    <i class="fa-solid fa-moon dark:hidden"></i>
+                    <i class="fa-solid fa-sun hidden dark:block"></i>
+                </button>
+                <button onclick="toggleHeaderMenu()" class="p-2 hover:text-slate-800 dark:hover:text-white transition-colors">
+                    <i class="fa-solid fa-ellipsis-vertical"></i>
+                </button>
+                <button onclick="closeChartboardModal()" class="p-2 hover:text-slate-800 dark:hover:text-white transition-colors text-base ml-1">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+
+                <!-- Dropdown Menu -->
+                <div id="headerDropdownMenu" class="hidden absolute right-8 top-10 w-40 bg-white dark:bg-[#22222E] border border-slate-200 dark:border-white/10 rounded-xl shadow-xl overflow-hidden z-50">
+                    <button onclick="resetChartboard()" class="w-full text-left px-4 py-2.5 text-xs font-medium text-rose-500 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors flex items-center space-x-2">
+                        <i class="fa-solid fa-rotate-right"></i> <span>Reset Chat</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SCROLLABLE BODY (Strictly contrains scrolling inside widget) -->
+        <div id="chartboardBody" class="flex-1 overflow-y-auto overflow-x-hidden widget-scrollbar relative bg-slate-50 dark:bg-[#121218]">
+            
+            <!-- ========================================== -->
+            <!-- HOME VIEW STATE (Massive curved header match) -->
+            <!-- ========================================== -->
+            <div id="viewHomeState" class="min-h-full pb-20">
+                <!-- Massive Curved Theme Header -->
+                <div class="dynamic-gradient pt-8 pb-10 px-6 rounded-b-[2rem] sticky top-0 z-30 shadow-md">
+                    <!-- Top Controls on Home -->
+                    <div class="absolute top-4 right-4 flex space-x-2 text-white/80">
+                        <button onclick="toggleTheme()" class="p-2 hover:text-white transition-colors">
+                            <i class="fa-solid fa-moon dark:hidden"></i>
+                            <i class="fa-solid fa-sun hidden dark:block"></i>
+                        </button>
+                        <button onclick="closeChartboardModal()" class="p-2 hover:text-white transition-colors text-base">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+
+                    <div class="flex items-center space-x-2.5 mb-5">
+                        <div class="w-8 h-8 bg-white rounded-lg flex items-center justify-center dynamic-text shadow-sm">
+                            <i class="fa-solid fa-suitcase-medical" id="homeHeaderIcon"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-sm font-bold text-white tracking-wide" id="homeTitle">CareWell AI</h2>
+                            <p class="text-[9px] text-white/80 flex items-center"><span class="w-1.5 h-1.5 rounded-full bg-emerald-300 mr-1"></span> Online</p>
+                        </div>
+                    </div>
+
+                    <h1 class="text-3xl font-bold text-white mb-2">Hello! 👋</h1>
+                    <p class="text-sm text-white/90 mb-5 font-medium" id="homeGreeting">How can I assist you today?</p>
+
+                    <!-- Home Search Bar -->
+                    <div class="relative w-full shadow-lg rounded-full" onclick="startChatFromSearch()">
+                        <input type="text" placeholder="Search treatments, doctors..." id="homeSearchInput" readonly class="w-full py-3.5 pl-4 pr-12 rounded-full text-sm text-slate-800 bg-white border-none focus:ring-0 cursor-text shadow-inner placeholder-slate-400">
+                        <button class="absolute right-1.5 top-1.5 bottom-1.5 w-10 dynamic-bg text-white rounded-full flex items-center justify-center hover:opacity-90 transition-opacity">
+                            <i class="fa-solid fa-paper-plane text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Main Home Content -->
+                <div class="px-5 py-6 space-y-6 relative z-0">
+                    
+                    <!-- Quick Actions Grid (4 Icons) -->
+                    <div>
+                        <div class="flex justify-between items-center mb-3">
+                            <h3 class="text-xs font-bold text-slate-800 dark:text-white">Quick Access</h3>
+                        </div>
+                        <div class="grid grid-cols-4 gap-2" id="homeQuickActions">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Horizontal Highlight Section -->
+                    <div>
+                        <div class="flex justify-between items-center mb-3">
+                            <h3 class="text-xs font-bold text-slate-800 dark:text-white" id="homeCarouselTitle">Top Specialists</h3>
+                            <div class="flex space-x-1">
+                                <button class="w-6 h-6 rounded-full bg-white dark:bg-[#1C1C24] border border-slate-200 dark:border-white/10 flex items-center justify-center text-[10px] text-slate-500 shadow-sm"><i class="fa-solid fa-chevron-left"></i></button>
+                                <button class="w-6 h-6 rounded-full bg-white dark:bg-[#1C1C24] border border-slate-200 dark:border-white/10 flex items-center justify-center text-[10px] text-slate-500 shadow-sm"><i class="fa-solid fa-chevron-right"></i></button>
+                            </div>
+                        </div>
+                        <div class="flex overflow-x-auto no-scrollbar space-x-3 pb-2" id="homeCarousel">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+
+                    <!-- You May Ask (Pills) -->
+                    <div>
+                        <h3 class="text-xs font-bold text-slate-800 dark:text-white mb-3">You may ask</h3>
+                        <div class="space-y-2" id="homePrompts">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========================================== -->
+            <!-- ACTIVE CHAT VIEW STATE -->
+            <!-- ========================================== -->
+            <div id="viewChatState" class="hidden p-4 space-y-4 pb-24">
+                <!-- Chat stream populated by JS -->
+            </div>
+
+        </div>
+
+        <!-- FIXED BOTTOM NAVIGATION BAR (Home Screen Only) -->
+        <div id="bottomNavBar" class="absolute bottom-0 w-full bg-white dark:bg-[#1A1A22] border-t border-slate-200 dark:border-white/10 px-6 py-2.5 flex justify-between items-center z-20">
+            <button class="flex flex-col items-center space-y-1 p-1 px-3 rounded-xl dynamic-pill-bg transition-colors">
+                <i class="fa-solid fa-house text-sm"></i>
+                <span class="text-[9px] font-bold">Home</span>
+            </button>
+            <button onclick="startChat('Show services')" class="group flex flex-col items-center space-y-1 p-1 px-3 text-slate-500 dark:text-slate-400 hover:text-[var(--theme-color)] dark:hover:text-[var(--theme-color)] transition-colors">
+                <i class="fa-solid fa-table-cells-large text-sm"></i>
+                <span class="text-[9px] font-medium group-hover:font-bold">Services</span>
+            </button>
+            <button onclick="startChat('Book an appointment')" class="group flex flex-col items-center space-y-1 p-1 px-3 text-slate-500 dark:text-slate-400 hover:text-[var(--theme-color)] dark:hover:text-[var(--theme-color)] transition-colors">
+                <i class="fa-solid fa-calendar-check text-sm"></i>
+                <span class="text-[9px] font-medium group-hover:font-bold">Bookings</span>
+            </button>
+            <button class="group flex flex-col items-center space-y-1 p-1 px-3 text-slate-500 dark:text-slate-400 hover:text-[var(--theme-color)] dark:hover:text-[var(--theme-color)] transition-colors">
+                <i class="fa-regular fa-user text-sm"></i>
+                <span class="text-[9px] font-medium group-hover:font-bold">Profile</span>
+            </button>
+        </div>
+
+        <!-- FIXED CHAT INPUT BAR (Chat View Only) -->
+        <div id="chatInputBar" class="hidden absolute bottom-0 w-full p-3 bg-white dark:bg-[#1A1A22] border-t border-slate-200 dark:border-white/10 z-20">
+            <div class="relative flex items-center">
+                <input type="text" id="chatInput" onkeypress="if(event.key==='Enter') submitUserMessage()" placeholder="Type a message..." class="w-full py-3 pl-4 pr-12 text-sm rounded-full bg-slate-100 dark:bg-[#272732] text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 border border-slate-200 dark:border-white/10 focus:outline-none focus:border-[var(--theme-color)] focus:ring-1 focus:ring-[var(--theme-color)] shadow-inner transition-colors">
+                <button onclick="submitUserMessage()" class="absolute right-2 w-8 h-8 rounded-full dynamic-bg text-white flex items-center justify-center hover:opacity-90 transition-opacity">
+                    <i class="fa-solid fa-paper-plane text-xs"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- BOTTOM SHEET BOOKING OVERLAY (Hidden by default) -->
+        <div id="bookingBottomSheet" class="absolute inset-0 z-[100] hidden flex-col justify-end pointer-events-none">
+            <div class="absolute inset-0 bg-black/40 backdrop-blur-sm pointer-events-auto transition-opacity" onclick="closeBottomSheet()"></div>
+            
+            <div class="bg-white dark:bg-[#16161D] w-full rounded-t-3xl shadow-[0_-10px_40px_rgba(0,0,0,0.2)] pointer-events-auto relative flex flex-col max-h-[85%] animate-bottom-sheet">
+                <!-- Drag Handle -->
+                <div class="w-full flex justify-center pt-3 pb-2 cursor-grab">
+                    <div class="w-12 h-1.5 bg-slate-300 dark:bg-white/20 rounded-full"></div>
+                </div>
+
+                <!-- Header -->
+                <div class="px-5 pb-3 flex items-center justify-between border-b border-slate-200 dark:border-white/10">
+                    <h3 class="text-lg font-bold text-slate-900 dark:text-white tracking-tight" id="bsTitle">Choose Provider</h3>
+                    <button onclick="closeBottomSheet()" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-white/10 text-slate-500 dark:text-slate-300 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-white/20">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+
+                <!-- Dynamic Content Area -->
+                <div id="bsContent" class="overflow-y-auto widget-scrollbar p-5 space-y-3 pb-8">
+                    <!-- Injected via JS -->
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- JAVASCRIPT LOGIC ENGINE -->
+    <script>
+        // --- 1. INDUSTRY DATA (Deep Use Cases from PDF) ---
+        const industries = {
+            healthcare: {
+                themeColor: '#3B82F6', themeGradient: 'linear-gradient(135deg, #2563EB, #3B82F6)',
+                appName: 'CareWell AI', icon: 'fa-suitcase-medical',
+                heroBadge: 'Healthcare Agent Active',
+                heroTitle: 'Automate Patient<br><span class="dynamic-text">Appointments & Care</span>',
+                greeting: 'How can I assist you with your health today?',
+                searchPlaceholder: 'Search treatments, doctors, labs...',
+                quickActions: [
+                    { icon: 'fa-calendar-check', label: 'Book Consult', query: 'Book a doctor consultation' },
+                    { icon: 'fa-user-doctor', label: 'Our Doctors', query: 'Show top specialists' },
+                    { icon: 'fa-notes-medical', label: 'Treatments', query: 'Show available treatments' },
+                    { icon: 'fa-flask', label: 'Lab Tests', query: 'Book a blood test' }
+                ],
+                carouselTitle: 'Top Specialists',
+                carouselItems: [
+                    { id: 'doc_1', name: 'Dr. Viren Khatri', sub: 'Cardiology • 15 Yrs', img: 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&w=200&q=80', action: 'Book' },
+                    { id: 'doc_2', name: 'Dr. Pranay Patel', sub: 'Orthopedics • 12 Yrs', img: 'https://images.unsplash.com/photo-1537368910025-7028a4231b5c?auto=format&fit=crop&w=200&q=80', action: 'Book' },
+                    { id: 'doc_3', name: 'Dr. Sarah Jenkins', sub: 'Pediatrics • 8 Yrs', img: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=200&q=80', action: 'Book' }
+                ],
+                prompts: ['Do you accept BlueCross insurance?', 'What are the clinic timings?', 'Cost of an MRI scan?']
+            },
+            edtech: {
+                themeColor: '#F97316', themeGradient: 'linear-gradient(135deg, #EA580C, #F97316)',
+                appName: 'LearnPro AI', icon: 'fa-graduation-cap',
+                heroBadge: 'EdTech Agent Active',
+                heroTitle: 'Boost Admissions<br><span class="dynamic-text">& Student Success</span>',
+                greeting: 'How can I guide your learning journey?',
+                searchPlaceholder: 'Search courses, admissions...',
+                quickActions: [
+                    { icon: 'fa-book-open', label: 'Top Courses', query: 'Show top courses' },
+                    { icon: 'fa-clipboard-list', label: 'Admissions', query: 'When do admissions open?' },
+                    { icon: 'fa-trophy', label: 'Scholarships', query: 'Show scholarship criteria' },
+                    { icon: 'fa-money-bill', label: 'Fee Details', query: 'What is the fee structure?' }
+                ],
+                carouselTitle: 'Popular Courses',
+                carouselItems: [
+                    { id: 'crs_1', name: 'Data Science', sub: 'Beginner • 12 Weeks', img: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=200&q=80', action: 'Apply' },
+                    { id: 'crs_2', name: 'UI/UX Design', sub: 'Intermediate • 8 Weeks', img: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?auto=format&fit=crop&w=200&q=80', action: 'Apply' },
+                    { id: 'crs_3', name: 'Digital Marketing', sub: 'Beginner • 6 Weeks', img: 'https://images.unsplash.com/photo-1432888117426-115f08ac9764?auto=format&fit=crop&w=200&q=80', action: 'Apply' }
+                ],
+                prompts: ['When do fall admissions open?', 'Can I talk to a counsellor?', 'Show placement records.']
+            },
+            realestate: {
+                themeColor: '#10B981', themeGradient: 'linear-gradient(135deg, #059669, #10B981)',
+                appName: 'UrbanSpace AI', icon: 'fa-building',
+                heroBadge: 'Real Estate Agent Active',
+                heroTitle: 'Convert Enquiries<br><span class="dynamic-text">To Site Visits</span>',
+                greeting: 'How can I help you find your dream space?',
+                searchPlaceholder: 'Search properties, locations...',
+                quickActions: [
+                    { icon: 'fa-house', label: 'Buy Property', query: 'Show properties for sale' },
+                    { icon: 'fa-key', label: 'Rent Property', query: 'Show rental properties' },
+                    { icon: 'fa-city', label: 'New Projects', query: 'Show new developments' },
+                    { icon: 'fa-calculator', label: 'EMI Calc', query: 'Calculate EMI for 1.5Cr' }
+                ],
+                carouselTitle: 'Featured Properties',
+                carouselItems: [
+                    { id: 'prop_1', name: '₹1.25 Cr Villa', sub: '3 BHK • Hyderabad', img: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=200&q=80', action: 'Visit' },
+                    { id: 'prop_2', name: '₹2.45 Cr Apt', sub: '4 BHK • Gachibowli', img: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=200&q=80', action: 'Visit' },
+                    { id: 'prop_3', name: '₹85 L Condo', sub: '2 BHK • Madhapur', img: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=200&q=80', action: 'Visit' }
+                ],
+                prompts: ['Show me 3BHKs in Gachibowli', 'How far is the nearest school?', 'Schedule a site visit.']
+            },
+            hotels: {
+                themeColor: '#0D9488', themeGradient: 'linear-gradient(135deg, #0F766E, #0D9488)',
+                appName: 'TravelGo AI', icon: 'fa-plane',
+                heroBadge: 'Hospitality Agent Active',
+                heroTitle: 'Drive Direct Bookings<br><span class="dynamic-text">& Guest Services</span>',
+                greeting: 'Where would you like to go today?',
+                searchPlaceholder: 'Search trips, hotels, flights...',
+                quickActions: [
+                    { icon: 'fa-plane-departure', label: 'Flights', query: 'Book a flight' },
+                    { icon: 'fa-hotel', label: 'Hotels', query: 'Show luxury hotels' },
+                    { icon: 'fa-suitcase', label: 'Packages', query: 'Holiday packages' },
+                    { icon: 'fa-calendar', label: 'My Bookings', query: 'Check booking status' }
+                ],
+                carouselTitle: 'Top Destinations',
+                carouselItems: [
+                    { id: 'dest_1', name: 'Bali Retreat', sub: '5 Nights • Flights Inc.', img: 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=200&q=80', action: 'View' },
+                    { id: 'dest_2', name: 'Dubai Luxury', sub: '4 Nights • City Tour', img: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=200&q=80', action: 'View' },
+                    { id: 'dest_3', name: 'Maldives', sub: '7 Nights • Water Villa', img: 'https://images.unsplash.com/photo-1514282401047-d79a71a590e8?auto=format&fit=crop&w=200&q=80', action: 'View' }
+                ],
+                prompts: ['Show hotels in Paris', 'Do you offer airport transfers?', 'What is the cancellation policy?']
+            },
+            retail: {
+                themeColor: '#8B5CF6', themeGradient: 'linear-gradient(135deg, #7C3AED, #8B5CF6)',
+                appName: 'ShopSmart AI', icon: 'fa-cart-shopping',
+                heroBadge: 'E-Commerce Agent Active',
+                heroTitle: 'Conversational Commerce<br><span class="dynamic-text">To Drive Sales</span>',
+                greeting: 'Ready to find your perfect item?',
+                searchPlaceholder: 'Search products, electronics...',
+                quickActions: [
+                    { icon: 'fa-fire', label: 'Best Sellers', query: 'Show best sellers' },
+                    { icon: 'fa-tag', label: 'Deals', query: 'Show current deals' },
+                    { icon: 'fa-truck-fast', label: 'Track Order', query: 'Where is my order?' },
+                    { icon: 'fa-headset', label: 'Support', query: 'Return policy' }
+                ],
+                carouselTitle: 'Trending Now',
+                carouselItems: [
+                    { id: 'ret_1', name: 'Wireless ANC Pro', sub: '$199.00 • Electronics', img: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=200&q=80', action: 'Add' },
+                    { id: 'ret_2', name: 'Retro Sneaker', sub: '$95.00 • Apparel', img: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=200&q=80', action: 'Add' },
+                    { id: 'ret_3', name: 'Glow Serum', sub: '$42.00 • Beauty', img: 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&w=200&q=80', action: 'Add' }
+            ],
+            prompts: ['Do you have size 10 sneakers?', 'Show me organic skincare.', 'Apply discount code.']
+        },
+        retail_food: {
+            themeColor: '#F59E0B', themeGradient: 'linear-gradient(135deg, #D97706, #F59E0B)',
+            appName: 'Dadus 1111 AI', icon: 'fa-burger',
+            heroBadge: 'Gourmet Sweets E-Commerce',
+            heroTitle: 'Artisanal Confectionery<br><span class="dynamic-text">Fresh Daily Sweets</span>',
+            greeting: 'Craving something sweet today?',
+            searchPlaceholder: 'Search sweets, gift boxes...',
+            quickActions: [
+                { icon: 'fa-fire', label: 'Best Sellers', query: 'Show best sellers' },
+                { icon: 'fa-gift', label: 'Gift Boxes', query: 'Show gift boxes' },
+                { icon: 'fa-scale-balanced', label: 'Compare', query: 'Compare items' },
+                { icon: 'fa-headset', label: 'Support', query: 'Track order' }
+            ],
+            carouselTitle: 'Top Sweets',
+            carouselItems: [
+                { id: 'rf_1', name: 'Motichoor Laddu', sub: '₹305.00 • Pure Ghee', img: 'https://images.unsplash.com/photo-1599785209707-a456fc1337cc?auto=format&fit=crop&w=200&q=80', action: 'Add', price: '₹305.00', desc: 'Authentic Motichoor Laddu with premium ingredients, soft texture, and festive appeal.' },
+                { id: 'rf_2', name: 'Kaju Katli', sub: '₹605.00 • Cashews', img: 'https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?auto=format&fit=crop&w=200&q=80', action: 'Add', price: '₹605.00', desc: 'Premium soft kaju katli made from organic cashews and pure ghee.' },
+                { id: 'rf_3', name: 'Mithai Box', sub: '₹900.00 • 16 Pcs', img: 'https://images.unsplash.com/photo-1549007994-cb92caebd54b?auto=format&fit=crop&w=200&q=80', action: 'Add', price: '₹900.00', desc: 'A rich combination of pistachio pedas, saffron halwa, and cashew rolls.' }
+            ],
+            prompts: ['Do you have sugar-free options?', 'When will my order arrive?']
+        },
+        retail_shoes: {
+            themeColor: '#3B82F6', themeGradient: 'linear-gradient(135deg, #2563EB, #3B82F6)',
+            appName: 'Steps Footwear AI', icon: 'fa-shoe-prints',
+            heroBadge: 'Apparel E-Commerce Active',
+            heroTitle: 'Step Into Next-Gen<br><span class="dynamic-text">Style & Comfort</span>',
+            greeting: 'Find your perfect fit today.',
+            searchPlaceholder: 'Search running, casual, sneakers...',
+            quickActions: [
+                { icon: 'fa-fire', label: 'Trending', query: 'Show trending shoes' },
+                { icon: 'fa-person-running', label: 'Running', query: 'Running shoes' },
+                { icon: 'fa-tag', label: 'Sale', query: 'Clearance sale' },
+                { icon: 'fa-headset', label: 'Support', query: 'Return policy' }
+            ],
+            carouselTitle: 'New Arrivals',
+            carouselItems: [
+                { id: 'rs_1', name: 'Air Max Pro', sub: '$120.00 • Running', img: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=200&q=80', action: 'Add', price: '$120.00', desc: 'Engineered for optimal impact absorption and high energy response.' },
+                { id: 'rs_2', name: 'Urban High Tops', sub: '$95.00 • Casual', img: 'https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?auto=format&fit=crop&w=200&q=80', action: 'Add', price: '$95.00', desc: 'Sleek casual high-top design constructed with durable leather.' },
+                { id: 'rs_3', name: 'Retro Sneaker', sub: '$85.00 • Classic', img: 'https://images.unsplash.com/photo-1608231387042-66d1773070a5?auto=format&fit=crop&w=200&q=80', action: 'Add', price: '$85.00', desc: 'Timeless silhouette crafted for daily street style.' }
+            ],
+            prompts: ['Show me running shoes.', 'Do you have size 10?']
+        },
+        retail_tech: {
+            themeColor: '#0EA5E9', themeGradient: 'linear-gradient(135deg, #0284C7, #0EA5E9)',
+            appName: 'Steps Tech AI', icon: 'fa-headphones',
+            heroBadge: 'Tech Store Active',
+            heroTitle: 'Next-Generation<br><span class="dynamic-text">Personal Electronics</span>',
+            greeting: 'Looking for the latest tech?',
+            searchPlaceholder: 'Search headphones, speakers...',
+            quickActions: [
+                { icon: 'fa-headphones-simple', label: 'Audio', query: 'Show audio gear' },
+                { icon: 'fa-mobile-screen', label: 'Smartwear', query: 'Show smart watches' },
+                { icon: 'fa-bolt', label: 'Deals', query: 'Flash deals' },
+                { icon: 'fa-headset', label: 'Support', query: 'Warranty info' }
+            ],
+            carouselTitle: 'Top Rated',
+            carouselItems: [
+                { id: 'rt_1', name: 'Wireless ANC Pro', sub: '$199.00 • Audio', img: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=200&q=80', action: 'Add', price: '$199.00', desc: 'Studio acoustic drivers paired with memory foam earcups.' },
+                { id: 'rt_2', name: 'Bluetooth Speaker', sub: '$79.00 • Portable', img: 'https://images.unsplash.com/photo-1484704849700-f032a568e944?auto=format&fit=crop&w=200&q=80', action: 'Add', price: '$79.00', desc: 'Portable rugged speaker delivering rich spatial sound.' },
+                { id: 'rt_3', name: 'Fitness Watch', sub: '$149.00 • Wearable', img: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=200&q=80', action: 'Add', price: '$149.00', desc: 'Continuous biometrics monitoring with built-in GPS.' }
+            ],
+            prompts: ['Compare headphones.', 'Waterproof speakers?']
+        },
+        retail_beauty: {
+            themeColor: '#EC4899', themeGradient: 'linear-gradient(135deg, #DB2777, #EC4899)',
+            appName: 'Steps Beauty AI', icon: 'fa-wand-magic-sparkles',
+            heroBadge: 'Beauty Store Active',
+            heroTitle: 'Botanical Radiance<br><span class="dynamic-text">Clean Skincare</span>',
+            greeting: 'Find your natural glow.',
+            searchPlaceholder: 'Search serums, creams...',
+            quickActions: [
+                { icon: 'fa-pump-medical', label: 'Serums', query: 'Show face serums' },
+                { icon: 'fa-spray-can', label: 'Creams', query: 'Moisturizers' },
+                { icon: 'fa-leaf', label: 'Organic', query: 'Organic products' },
+                { icon: 'fa-headset', label: 'Support', query: 'Ingredients list' }
+            ],
+            carouselTitle: 'Bestsellers',
+            carouselItems: [
+                { id: 'rb_1', name: 'Glow Serum', sub: '$42.00 • Skincare', img: 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&w=200&q=80', action: 'Add', price: '$42.00', desc: 'Restores skin barrier balance and locks in deep hydration.' },
+                { id: 'rb_2', name: 'Moisture Cream', sub: '$38.00 • Hydrating', img: 'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=200&q=80', action: 'Add', price: '$38.00', desc: 'Rich velvet moisturizer formulated to nourish dry skin.' },
+                { id: 'rb_3', name: 'Gentle Cleanser', sub: '$26.00 • Daily Use', img: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&w=200&q=80', action: 'Add', price: '$26.00', desc: 'Sulfate-free pH balanced gel cleanser.' }
+            ],
+            prompts: ['Routine for dry skin?', 'Show organic serums.']
+        }
+    };
+
+    let currentIndustry = 'healthcare';
+        let currentLayout = 'horizontal';
+        let isDarkMode = false;
+        
+        // Booking State
+        let bookingData = { provider: null, type: null, date: 'Thursday, Jul 30', time: null };
+
+        // --- 2. THEME & INIT LOGIC ---
+        function switchIndustry(indKey) {
+            currentIndustry = indKey;
+            const data = industries[indKey];
+            
+            // Update CSS Variables
+            document.documentElement.style.setProperty('--theme-color', data.themeColor);
+            document.documentElement.style.setProperty('--theme-bg-gradient', data.themeGradient);
+            
+            // Update Top Nav Buttons
+            document.querySelectorAll('.ind-btn').forEach(btn => {
+            btn.className = "ind-btn px-4 py-1.5 rounded-lg font-semibold transition-all text-slate-400 hover:text-white flex items-center space-x-2";
+            btn.style.backgroundColor = "transparent";
+        });
+        
+        // Handle active state, including the base "Retail" button for retail variants
+        const baseInd = indKey.startsWith('retail') ? 'retail' : indKey;
+        const activeBtn = document.getElementById(`btnInd${baseInd.charAt(0).toUpperCase() + baseInd.slice(1)}`);
+        if(activeBtn) {
+            activeBtn.className = `ind-btn px-4 py-1.5 rounded-lg font-semibold transition-all flex items-center space-x-2 bg-[${data.themeColor}] text-white`;
+            activeBtn.style.backgroundColor = data.themeColor;
+        }
+
+        // Update Hero
+            document.getElementById('heroBadge').innerText = data.heroBadge;
+            document.getElementById('heroTitle').innerHTML = data.heroTitle;
+            
+            // Update Chartboard Home UI
+            document.getElementById('homeHeaderIcon').className = `fa-solid ${data.icon}`;
+            document.getElementById('homeTitle').innerText = data.appName;
+            document.getElementById('widgetChatTitle').innerText = data.appName;
+            document.getElementById('homeGreeting').innerText = data.greeting;
+            document.getElementById('homeSearchInput').placeholder = data.searchPlaceholder;
+            
+            // Populate Quick Actions
+            document.getElementById('homeQuickActions').innerHTML = data.quickActions.map(action => `
+                <button onclick="startChat('${action.query}')" class="flex flex-col items-center space-y-2 group">
+                    <div class="w-14 h-14 rounded-2xl bg-white dark:bg-[#1C1C24] border border-slate-200 dark:border-white/10 flex items-center justify-center text-[var(--theme-color)] text-xl shadow-sm group-hover:shadow-md group-hover:scale-105 transition-all">
+                        <i class="fa-solid ${action.icon}"></i>
+                    </div>
+                    <span class="text-[10px] font-semibold text-slate-600 dark:text-slate-300 text-center leading-tight">${action.label}</span>
+                </button>
+            `).join('');
+
+            // Populate Carousel
+            document.getElementById('homeCarouselTitle').innerText = data.carouselTitle;
+            document.getElementById('homeCarousel').innerHTML = data.carouselItems.map(item => `
+                <div onclick="startChat('Tell me about ${item.name}')" class="w-36 shrink-0 rounded-2xl bg-white dark:bg-[#1C1C24] border border-slate-200 dark:border-white/10 shadow-sm hover:shadow-md transition-all cursor-pointer overflow-hidden group">
+                    <div class="relative h-24 w-full">
+                        <img src="${item.img}" class="w-full h-full object-cover">
+                        <button class="absolute top-2 right-2 w-6 h-6 rounded-full bg-white/30 backdrop-blur-md flex items-center justify-center text-white hover:bg-white hover:text-rose-500 transition-colors shadow-sm" onclick="event.stopPropagation(); toggleWishlist(this)">
+                            <i class="fa-solid fa-heart text-[10px]"></i>
+                        </button>
+                    </div>
+                    <div class="p-2.5 space-y-1 bg-white dark:bg-[#1C1C24]">
+                        <h4 class="text-xs font-bold text-slate-800 dark:text-white truncate">${item.name}</h4>
+                        <p class="text-[9px] text-slate-500 dark:text-slate-400 truncate">${item.sub}</p>
+                        <button onclick="event.stopPropagation(); triggerAction('${item.action}')" class="w-full mt-1 py-1 rounded-lg dynamic-pill-bg text-[10px] font-bold group-hover:bg-[var(--theme-color)] group-hover:text-white transition-colors">
+                            ${item.action}
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+
+            // Populate Prompts
+            document.getElementById('homePrompts').innerHTML = data.prompts.map(p => `
+                <button onclick="startChat('${p}')" class="w-full flex items-center justify-between p-3 rounded-xl bg-white dark:bg-[#1C1C24] border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 hover:text-[var(--theme-color)] dark:hover:text-[var(--theme-color)] transition-colors text-xs font-medium text-left shadow-sm">
+                    <span>${p}</span>
+                    <i class="fa-solid fa-arrow-right text-[10px] opacity-50"></i>
+                </button>
+            `).join('');
+
+            resetChartboard();
+        }
+
+        function toggleTheme() {
+            isDarkMode = !isDarkMode;
+            if(isDarkMode) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        }
+
+        function changeLayout(layout) {
+            currentLayout = layout;
+            const containers = document.querySelectorAll('.dynamic-layout-container');
+            if (containers.length > 0) {
+                containers.forEach(container => {
+                    const ind = container.getAttribute('data-industry') || currentIndustry;
+                    container.innerHTML = generateLayoutHtml(layout, ind);
+                });
+                scrollChatToBottom();
+            } else {
+                if (!document.getElementById('viewChatState').classList.contains('hidden')) {
+                    appendAssistantBubble(`Layout switched to <b>${layout}</b>. Start a search to see the new layout in action.`);
+                }
+            }
+        }
+
+        // --- 3. UI STATE & WIDGET LOGIC ---
+        function openChartboardModal() {
+            document.getElementById('chartboardContainer').classList.remove('hidden');
+            document.getElementById('floatingRobotCTA').classList.add('hidden');
+        }
+
+        function closeChartboardModal() {
+            document.getElementById('chartboardContainer').classList.add('hidden');
+            document.getElementById('floatingRobotCTA').classList.remove('hidden');
+        }
+
+        function switchWidgetTab(tab) {
+            const home = document.getElementById('viewHomeState');
+            const chat = document.getElementById('viewChatState');
+            const header = document.getElementById('chatHeader');
+            const input = document.getElementById('chatInputBar');
+            const nav = document.getElementById('bottomNavBar');
+
+            if (tab === 'home') {
+                home.classList.remove('hidden');
+                nav.classList.remove('hidden');
+                chat.classList.add('hidden');
+                header.classList.add('hidden');
+                input.classList.add('hidden');
+            } else {
+                home.classList.add('hidden');
+                nav.classList.add('hidden');
+                chat.classList.remove('hidden');
+                header.classList.remove('hidden');
+                input.classList.remove('hidden');
+                scrollChatToBottom();
+            }
+        }
+
+        function toggleHeaderMenu() {
+            document.getElementById('headerDropdownMenu').classList.toggle('hidden');
+        }
+
+        function resetChartboard() {
+            document.getElementById('chatStream') ? document.getElementById('chatStream').innerHTML = '' : null;
+            document.getElementById('viewChatState').innerHTML = '<div id="chatStream" class="space-y-4"></div>';
+            switchWidgetTab('home');
+            document.getElementById('headerDropdownMenu').classList.add('hidden');
+        }
+
+        function toggleWishlist(btn) {
+            const icon = btn.querySelector('i');
+            if(btn.classList.contains('text-rose-500')) {
+                btn.classList.remove('text-rose-500');
+                btn.classList.add('text-white');
+                icon.classList.remove('fa-solid');
+                icon.classList.add('fa-regular');
+            } else {
+                btn.classList.remove('text-white');
+                btn.classList.add('text-rose-500');
+                icon.classList.remove('fa-regular');
+                icon.classList.add('fa-solid');
+            }
+        }
+
+        // --- 4. CONVERSATIONAL LOGIC & SMART ROUTER ---
+        function startChatFromSearch() {
+            const val = document.getElementById('homeSearchInput').placeholder;
+            startChat(val.replace('Search ', 'Show '));
+        }
+
+        function startChat(query) {
+            switchWidgetTab('chat');
+            appendUserBubble(query);
+            processQuery(query);
+        }
+
+        function submitUserMessage() {
+            const input = document.getElementById('chatInput');
+            const val = input.value.trim();
+            if (val) {
+                input.value = '';
+                appendUserBubble(val);
+                processQuery(val);
+            }
+        }
+
+        
+        function startRescheduleFlow() {
+            setTimeout(() => {
+                appendAssistantBubble(`
+                    <p class="text-xs text-slate-700 dark:text-slate-200 mb-2">I can help you reschedule. Could you please provide your <b>Appointment ID</b> or the <b>phone number</b> you booked with?</p>
+                `);
+            }, 300);
+        }
+        function processQuery(query) {
+            if(window.companionAgent) window.companionAgent.setState('THINKING');
+            const q = query.toLowerCase();
+            setTimeout(() => {
+                
+                // SMART INTENT ROUTER
+                if (q.includes('reschedule') || q.includes('cancel')) return startRescheduleFlow();
+                // SMART INTENT ROUTER
+                if (currentIndustry === 'healthcare') {
+                    if (q.includes('treatment') || q.includes('care')) return renderTreatmentsFlow();
+                    if (q.includes('book') || q.includes('consult') || q.includes('appointment')) return startBookingFlow();
+                } else if (currentIndustry === 'realestate') {
+                    if (q.includes('school') || q.includes('far') || q.includes('distance')) return renderNeighborhoodFlow();
+                    if (q.includes('visit') || q.includes('book')) return startBookingFlow();
+                } else if (currentIndustry === 'retail') {
+                    if (q.includes('add') || q.includes('cart')) return renderCartFlow();
+                }
+                
+                // Fallback Generic Card Render based on current layout
+                renderGenericDataFlow();
+
+            }, 500);
+        }
+
+        function appendUserBubble(text) {
+            const stream = document.getElementById('chatStream');
+            stream.insertAdjacentHTML('beforeend', `
+                <div class="flex justify-end animate-bubble">
+                    <div class="dynamic-bg text-white font-normal text-xs py-2 px-3.5 rounded-2xl rounded-tr-sm max-w-[85%] shadow-sm">
+                        ${text}
+                    </div>
+                </div>
+            `);
+            scrollChatToBottom();
+        }
+
+        function appendAssistantBubble(htmlContent) {
+            const stream = document.getElementById('chatStream');
+            stream.insertAdjacentHTML('beforeend', `
+                <div class="space-y-2 animate-bubble">
+                    <div class="flex items-center space-x-1.5">
+                        <div class="w-5 h-5 rounded-full dynamic-bg text-white flex items-center justify-center text-[10px] font-bold shadow-sm">
+                            <i class="fa-solid ${industries[currentIndustry].icon}"></i>
+                        </div>
+                        <span class="text-[10px] font-bold tracking-wider text-slate-500 dark:text-slate-400 uppercase">${industries[currentIndustry].appName}</span>
+                    </div>
+                    <div class="pl-6 space-y-3">
+                        ${htmlContent}
+                    </div>
+                </div>
+            `);
+            scrollChatToBottom();
+        }
+
+        // --- 5. DEEP INDUSTRY USE CASES ---
+
+        function renderTreatmentsFlow() {
+            appendAssistantBubble(`
+                <p class="text-xs text-slate-700 dark:text-slate-200">We offer specialized care across multiple departments. Which area are you looking for?</p>
+                <div class="grid grid-cols-2 gap-2 mt-2">
+                    <div onclick="submitUserMessage('Tell me about Orthopedics')" class="p-2.5 rounded-xl bg-white dark:bg-[#1C1C24] border border-slate-200 dark:border-white/10 cursor-pointer hover:border-[var(--theme-color)] transition-colors text-center shadow-sm">
+                        <i class="fa-solid fa-bone text-xl dynamic-text mb-1"></i>
+                        <h4 class="text-[11px] font-bold text-slate-800 dark:text-white">Orthopedics</h4>
+                    </div>
+                    <div onclick="submitUserMessage('Tell me about Cardiology')" class="p-2.5 rounded-xl bg-white dark:bg-[#1C1C24] border border-slate-200 dark:border-white/10 cursor-pointer hover:border-[var(--theme-color)] transition-colors text-center shadow-sm">
+                        <i class="fa-solid fa-heart-pulse text-xl dynamic-text mb-1"></i>
+                        <h4 class="text-[11px] font-bold text-slate-800 dark:text-white">Cardiology</h4>
+                    </div>
+                </div>
+                <div class="flex flex-wrap gap-1.5 mt-2">
+                    <button onclick="submitUserMessage('Do you accept insurance?')" class="px-2.5 py-1 rounded-full border border-slate-200 dark:border-white/10 text-[10px] font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors">Insurance?</button>
+                    <button onclick="submitUserMessage('Cost of knee surgery?')" class="px-2.5 py-1 rounded-full border border-slate-200 dark:border-white/10 text-[10px] font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors">Surgery Costs?</button>
+                </div>
+            `);
+        }
+
+        function renderNeighborhoodFlow() {
+            appendAssistantBubble(`
+                <p class="text-xs text-slate-700 dark:text-slate-200">The <b>₹2.45 Cr Apt in Gachibowli</b> is perfectly located. Here is the distance to key locations:</p>
+                <div class="bg-white dark:bg-[#1C1C24] rounded-xl border border-slate-200 dark:border-white/10 overflow-hidden shadow-sm">
+                    <div class="p-2.5 flex justify-between items-center border-b border-slate-100 dark:border-white/5">
+                        <div class="flex items-center space-x-2 text-xs"><i class="fa-solid fa-school text-emerald-500"></i><span class="font-medium text-slate-800 dark:text-white">Oakridge School</span></div>
+                        <span class="text-[10px] text-slate-500">1.2 km (5 mins)</span>
+                    </div>
+                    <div class="p-2.5 flex justify-between items-center border-b border-slate-100 dark:border-white/5">
+                        <div class="flex items-center space-x-2 text-xs"><i class="fa-solid fa-truck-medical text-rose-500"></i><span class="font-medium text-slate-800 dark:text-white">Care Hospital</span></div>
+                        <span class="text-[10px] text-slate-500">3.0 km (10 mins)</span>
+                    </div>
+                    <div class="p-2.5 flex justify-between items-center">
+                        <div class="flex items-center space-x-2 text-xs"><i class="fa-solid fa-briefcase text-blue-500"></i><span class="font-medium text-slate-800 dark:text-white">Cyber Towers</span></div>
+                        <span class="text-[10px] text-slate-500">4.5 km (15 mins)</span>
+                    </div>
+                </div>
+                <button onclick="startBookingFlow()" class="w-full mt-2 py-2 rounded-xl dynamic-bg text-white text-xs font-bold shadow-md">Book a Site Visit to verify</button>
+            `);
+        }
+
+        function renderCartFlow() {
+            appendAssistantBubble(`
+                <p class="text-xs text-slate-700 dark:text-slate-200">I've added the <b>Wireless ANC Pro</b> to your cart. People who bought this also loved:</p>
+                <div class="flex space-x-2 mt-2 overflow-x-auto no-scrollbar pb-1">
+                    <div class="w-28 shrink-0 bg-white dark:bg-[#1C1C24] p-1.5 rounded-xl border border-slate-200 dark:border-white/10 shadow-sm relative">
+                        <img src="https://images.unsplash.com/photo-1572569531922-28d166c3905b?auto=format&fit=crop&w=150&q=80" class="w-full h-16 object-cover rounded-lg">
+                        <button class="absolute top-2 right-2 w-5 h-5 rounded-full bg-white/50 backdrop-blur text-slate-900 flex items-center justify-center text-[10px] shadow-sm">+</button>
+                        <h4 class="text-[9px] font-bold text-slate-800 dark:text-white mt-1 truncate">Hard Travel Case</h4>
+                        <span class="text-[9px] font-bold text-[var(--theme-color)]">$24.00</span>
+                    </div>
+                </div>
+                <button class="w-full mt-2 py-2 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-xs font-bold shadow-md">Checkout Now ($199.00)</button>
+            `);
+        }
+
+        function generateLayoutHtml(layoutName, industryKey) {
+            const data = industries[industryKey];
+            let cardsHtml = '';
+
+        // Using the global layout switcher selected value
+        if (layoutName === 'horizontal') {
+            cardsHtml = data.carouselItems.map(item => `
+                <div onclick="showProductDetails('${item.id}')" class="flex items-start space-x-3 p-2.5 bg-white dark:bg-[#1C1C24] rounded-xl border border-slate-200 dark:border-white/10 shadow-sm relative group cursor-pointer hover:border-[var(--theme-color)] transition-colors">
+                    <img src="${item.img}" class="w-16 h-16 rounded-lg object-cover">
+                    <div class="flex-1">
+                        <h4 class="text-xs font-bold text-slate-800 dark:text-white underline decoration-slate-300 dark:decoration-slate-600 group-hover:text-[var(--theme-color)] transition-colors">${item.name}</h4>
+                        <p class="text-[10px] text-slate-500 dark:text-slate-400">${item.sub}</p>
+                        <button onclick="event.stopPropagation(); triggerAction('${item.action}')" class="mt-1.5 px-3 py-1 rounded-md dynamic-bg text-white text-[9px] font-bold shadow-sm hover:opacity-90 transition-opacity">+ ${item.action}</button>
+                    </div>
+                </div>
+            `).join('');
+        } else if (layoutName === 'horizontal_variant') {
+            let variantHeader = "PORTION:";
+            if (industryKey.includes('shoes')) variantHeader = "SIZE:";
+            if (industryKey.includes('tech') && !industryKey.includes('edtech')) variantHeader = 'COLOR:';
+            if (industryKey.includes('edtech')) variantHeader = 'FORMAT:';
+            if (industryKey.includes('beauty')) variantHeader = "VOLUME:";
+            if (industryKey.includes('health')) variantHeader = "AVAILABILITY:";
+            if (industryKey.includes('real')) variantHeader = "VIEWING:";
+            if (industryKey.includes('travel')) variantHeader = "CLASS:";
+            
+            cardsHtml = data.carouselItems.map(item => {
+                let v1 = "500G", v2 = "1KG";
+                if (industryKey.includes('shoes')) { v1 = "US 9"; v2 = "US 10"; }
+                if (industryKey.includes('tech') && !industryKey.includes('edtech')) { v1 = 'BLACK'; v2 = 'WHITE'; }
+                if (industryKey.includes('edtech')) { v1 = 'ONLINE'; v2 = 'CAMPUS'; }
+                if (industryKey.includes('beauty')) { v1 = "30ML"; v2 = "50ML"; }
+                if (industryKey.includes('health')) { v1 = "TODAY"; v2 = "TMRW"; }
+                if (industryKey.includes('real')) { v1 = "VIRTUAL"; v2 = "IN-PERSON"; }
+                if (industryKey.includes('travel')) { v1 = "ECON"; v2 = "FIRST"; }
+
+                // The button text dynamically shows the item.action instead of hardcoded "+ Add to cart"
+                let buttonText = `+ ${item.action}`;
+                if (!item.action) buttonText = "+ Add";
+
+                return `
+                <div onclick="showProductDetails('${item.id}')" class="bg-white dark:bg-[#1C1C24] rounded-2xl border border-slate-200 dark:border-white/5 shadow-[0_4px_20px_rgba(0,0,0,0.08)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.35)] p-3 cursor-pointer group hover:border-[var(--theme-color)] dark:hover:border-[var(--theme-color)] transition-all">
+                    <div class="flex space-x-3 items-start">
+                        <img src="${item.img}" class="w-24 h-24 object-cover rounded-xl shrink-0">
+                        <div class="flex-1">
+                            <h4 class="text-[13px] font-bold text-slate-900 dark:text-white leading-tight group-hover:text-[var(--theme-color)] transition-colors">${item.name}</h4>
+                            <p class="text-sm font-bold text-slate-700 dark:text-slate-200 mt-0.5">${item.price || item.sub.split(' ')[0]}</p>
+                            
+                            <div class="flex items-center space-x-2 mt-2 mb-2">
+                                <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">${variantHeader}</span>
+                                <div class="flex space-x-1.5">
+                                    <span class="px-2 py-0.5 rounded-md dynamic-bg text-white text-[10px] font-bold">${v1}</span>
+                                    <span class="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-300 text-[10px] font-bold">${v2}</span>
+                                </div>
+                            </div>
+                            
+                            <button onclick="event.stopPropagation(); triggerAction('${item.action}')" class="w-full py-1.5 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-xl text-xs font-bold hover:opacity-90 transition-opacity shadow-sm">${buttonText}</button>
+                        </div>
+                    </div>
+                    <p class="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed pt-2 mt-2 border-t border-slate-200 dark:border-white/5 line-clamp-2">${item.desc || 'Best selection available for you.'}</p>
+                </div>
+                `;
+            }).join('');
+        } else if (layoutName === 'shelf') {
+            cardsHtml = `<div class="flex space-x-2 overflow-x-auto no-scrollbar pb-1">` + data.carouselItems.map(item => `
+                <div onclick="showProductDetails('${item.id}')" class="w-28 shrink-0 bg-white dark:bg-[#1C1C24] rounded-xl border border-slate-200 dark:border-white/10 shadow-sm p-1.5 cursor-pointer hover:border-[var(--theme-color)] transition-colors group">
+                    <img src="${item.img}" class="w-full h-20 rounded-lg object-cover mb-1.5">
+                    <h4 class="text-[10px] font-bold text-slate-800 dark:text-white truncate group-hover:text-[var(--theme-color)] transition-colors">${item.name}</h4>
+                    <button onclick="event.stopPropagation(); triggerAction('${item.action}')" class="w-full mt-1 py-1 rounded-md dynamic-pill-bg text-[9px] font-bold hover:opacity-90 transition-opacity">+ ${item.action}</button>
+                </div>
+            `).join('') + `</div>`;
+        } else if (layoutName === 'detailed') {
+            cardsHtml = data.carouselItems.map(item => `
+                <div onclick="showProductDetails('${item.id}')" class="bg-white dark:bg-[#1C1C24] rounded-xl border border-slate-200 dark:border-white/10 shadow-sm overflow-hidden cursor-pointer hover:border-[var(--theme-color)] transition-colors group">
+                    <img src="${item.img}" class="w-full h-32 object-cover">
+                    <div class="p-3 space-y-2">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h4 class="text-xs font-bold text-slate-800 dark:text-white group-hover:text-[var(--theme-color)] transition-colors">${item.name}</h4>
+                                <p class="text-[9px] text-slate-500 dark:text-slate-400">${item.sub}</p>
+                            </div>
+                        </div>
+                        <p class="text-[10px] text-slate-600 dark:text-slate-300 line-clamp-2">${item.desc || 'Premium quality guaranteed.'}</p>
+                        <button onclick="event.stopPropagation(); triggerAction('${item.action}')" class="w-full py-2 rounded-lg dynamic-bg text-white text-[10px] font-bold shadow-sm hover:opacity-90 transition-opacity">${item.action}</button>
+                    </div>
+                </div>
+            `).join('');
+        } else {
+            cardsHtml = data.carouselItems.map(item => `
+                <div onclick="showProductDetails('${item.id}')" class="bg-white dark:bg-[#1C1C24] rounded-xl border border-slate-200 dark:border-white/10 shadow-sm overflow-hidden cursor-pointer hover:border-[var(--theme-color)] transition-colors group">
+                    <img src="${item.img}" class="w-full h-24 object-cover">
+                    <div class="p-2.5 flex justify-between items-center">
+                        <div>
+                            <h4 class="text-xs font-bold text-slate-800 dark:text-white group-hover:text-[var(--theme-color)] transition-colors">${item.name}</h4>
+                            <p class="text-[9px] text-slate-500 dark:text-slate-400">${item.sub}</p>
+                        </div>
+                        <button onclick="event.stopPropagation(); triggerAction('${item.action}')" class="px-3 py-1.5 rounded-lg dynamic-bg text-white text-[10px] font-bold shadow-sm hover:opacity-90 transition-opacity">${item.action}</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+
+            return cardsHtml;
+        }
+
+        function renderGenericDataFlow() {
+            const cardsHtml = generateLayoutHtml(currentLayout, currentIndustry);
+
+            appendAssistantBubble(`
+                <p class="text-xs text-slate-700 dark:text-slate-200 mb-2">Based on your request, here are our top recommendations. <b>Tap any item for details.</b></p>
+                <div class="dynamic-layout-container space-y-2 mt-2" data-industry="${currentIndustry}">
+                    ${cardsHtml}
+                </div>
+            `);
+        }
+    // --- NEW: Detailed Product Card Flow ---
+    function showProductDetails(itemId) {
+        let item = null;
+        let itemIndustry = null;
+        let indKey = null;
+        for (const key in industries) {
+            const found = industries[key].carouselItems.find(i => i.id === itemId);
+            if (found) {
+                item = found;
+                itemIndustry = industries[key];
+                indKey = key;
+                break;
+            }
+        }
+        if (!item) return;
+
+        switchWidgetTab('chat');
+        appendUserBubble(`Show details for ${item.name}`);
+        
+        let variantHeader = "Options";
+        let opt1 = "Option 1", opt2 = "Option 2";
+        if (indKey.includes('food') || indKey.includes('grocery')) { variantHeader = "Portion"; opt1 = "500G"; opt2 = "1KG"; }
+        if (indKey.includes('shoes')) { variantHeader = "Size (US)"; opt1 = "US 9"; opt2 = "US 10"; }
+        if (indKey.includes('tech') && !indKey.includes('edtech')) { variantHeader = 'Color'; opt1 = 'BLACK'; opt2 = 'WHITE'; }
+        if (indKey.includes('edtech')) { variantHeader = 'Format'; opt1 = 'ONLINE'; opt2 = 'CAMPUS'; }
+        if (indKey.includes('beauty')) { variantHeader = "Volume"; opt1 = "30ML"; opt2 = "50ML"; }
+        if (indKey.includes('health')) { variantHeader = "Availability"; opt1 = "TODAY"; opt2 = "TOMORROW"; }
+        if (indKey.includes('real')) { variantHeader = "Viewing"; opt1 = "VIRTUAL"; opt2 = "IN-PERSON"; }
+        if (indKey.includes('travel')) { variantHeader = "Class"; opt1 = "ECONOMY"; opt2 = "BUSINESS"; }
+
+        let showQuantity = (indKey.includes('shoes') || indKey.includes('tech') || indKey.includes('beauty') || indKey.includes('food') || indKey.includes('grocery'));
+        
+        let btnIcon = "fa-cart-shopping";
+        let btnAction = item.action || "Add to Cart";
+        if (btnAction.includes("Book") || btnAction.includes("Schedule")) btnIcon = "fa-calendar-check";
+        if (btnAction.includes("Visit")) btnIcon = "fa-map-location-dot";
+        if (btnAction.includes("Apply")) btnIcon = "fa-file-signature";
+        if (btnAction.includes("Explore") || btnAction.includes("Details")) btnIcon = "fa-arrow-right";
+
+        setTimeout(() => {
+            appendAssistantBubble(`
+                <div class="bg-white dark:bg-[#16161D] rounded-2xl border border-slate-200 dark:border-white/10 overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.08)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.35)] animate-popup">
+                    <div class="relative">
+                        <img src="${item.img}" class="w-full h-36 object-cover">
+                        <button class="absolute top-2 right-2 w-7 h-7 rounded-full bg-white/50 backdrop-blur text-slate-900 flex items-center justify-center text-xs shadow-sm hover:text-rose-500 transition-colors" onclick="toggleWishlist(this)">
+                            <i class="fa-regular fa-heart"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="p-3.5 space-y-3">
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <h4 class="text-sm font-bold text-slate-900 dark:text-white tracking-tight">${item.name}</h4>
+                                <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">${item.sub}</p>
+                            </div>
+                            <span class="text-sm font-black text-[var(--theme-color)]">${item.price || item.sub.split(' ')[0]}</span>
+                        </div>
+
+                        <p class="text-[11px] text-slate-600 dark:text-slate-300 leading-relaxed">${item.desc || 'Best selection available for you.'}</p>
+
+                        <!-- Interactive Variant Selection -->
+                        <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5 space-y-1.5">
+                            <span class="text-[9px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">${variantHeader}</span>
+                            <div class="flex flex-wrap gap-1.5">
+                                <button class="px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all dynamic-bg text-white shadow-sm ring-2 ring-[var(--theme-color)] ring-offset-1 dark:ring-offset-[#16161D]">${opt1}</button>
+                                <button class="px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all bg-white dark:bg-[#22222E] border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/10">${opt2}</button>
+                            </div>
+                        </div>
+                        
+                        <!-- Quantity & Action -->
+                        <div class="flex items-center space-x-2 pt-1">
+                            ${showQuantity ? `
+                            <div class="flex items-center justify-between px-3 py-2 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl w-24 shrink-0">
+                                <button class="text-slate-500 dark:text-slate-400 hover:text-[var(--theme-color)] font-bold">-</button>
+                                <span class="text-xs font-bold text-slate-900 dark:text-white">1</span>
+                                <button class="text-slate-500 dark:text-slate-400 hover:text-[var(--theme-color)] font-bold">+</button>
+                            </div>
+                            ` : ''}
+                            <button onclick="triggerAction('${btnAction}')" class="flex-1 py-2.5 rounded-xl dynamic-bg text-white text-xs font-bold shadow-md hover:opacity-90 transition-opacity flex items-center justify-center space-x-1.5">
+                                <i class="fa-solid ${btnIcon} text-[10px]"></i> <span>${btnAction}</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `);
+        }, 300);
+    }
+
+    function triggerAction(actionName) {
+            if (actionName === 'Book' || actionName === 'Visit' || actionName === 'Apply') {
+                startBookingFlow();
+            } else if (actionName === 'Add') {
+                startChat('Add to cart');
+            } else {
+                startChat(`More details`);
+            }
+        }
+
+        function scrollChatToBottom() {
+            setTimeout(() => {
+                const body = document.getElementById('chartboardBody');
+                if(body) body.scrollTo({ top: body.scrollHeight, behavior: 'smooth' });
+            }, 50);
+        }
+
+        // --- 6. CHAT-BASED BOOKING ENGINE (With Conflict Logic) ---
+        function startBookingFlow() {
+            const providers = (currentIndustry === 'healthcare') ? [
+                { id: 'p1', name: 'Dr. Viren Khatri', desc: 'Cardiologist', img: 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&w=100&q=80' },
+                { id: 'p2', name: 'Dr. Pranay Patel', desc: 'Orthopedics', img: 'https://images.unsplash.com/photo-1537368910025-7028a4231b5c?auto=format&fit=crop&w=100&q=80' }
+            ] : [
+                { id: 'p1', name: 'Any Available Agent', desc: 'We\'ll match you whoever is free', img: '' },
+                { id: 'p2', name: 'Senior Consultant', desc: 'Expert advice', img: '' }
+            ];
+
+            let html = providers.map(p => `
+                <div onclick="selectProvider('${p.name}')" class="p-3 rounded-xl border border-slate-200 dark:border-white/10 hover:border-[var(--theme-color)] transition-colors cursor-pointer flex items-center space-x-3 bg-slate-50 dark:bg-[#1C1C24] mb-2">
+                    ${p.img ? `<img src="${p.img}" class="w-10 h-10 rounded-full object-cover">` : `<div class="w-10 h-10 rounded-full dynamic-bg text-white flex items-center justify-center font-bold">${p.name.charAt(0)}</div>`}
+                    <div>
+                        <h4 class="text-sm font-bold text-slate-800 dark:text-white">${p.name}</h4>
+                        <p class="text-[10px] text-slate-500">${p.desc}</p>
+                    </div>
+                </div>
+            `).join('');
+
+            appendAssistantBubble(`
+                <p class="text-xs text-slate-700 dark:text-slate-200 mb-2">Please choose a provider for your appointment:</p>
+                ${html}
+            `);
+        }
+
+        function selectProvider(name) {
+            bookingData.provider = name;
+            appendUserBubble(name);
+            setTimeout(() => {
+                appendAssistantBubble(`
+                    <p class="text-xs text-slate-700 dark:text-slate-200 mb-2">What type of meeting would you like to schedule?</p>
+                    <div onclick="selectType('30 min meeting')" class="mb-2 p-3.5 rounded-xl border border-slate-200 dark:border-white/10 hover:border-[var(--theme-color)] transition-colors cursor-pointer flex items-center justify-between bg-slate-50 dark:bg-[#1C1C24]">
+                        <span class="text-sm font-bold text-slate-800 dark:text-white">30 min meeting</span>
+                        <i class="fa-solid fa-chevron-right text-slate-400 text-xs"></i>
+                    </div>
+                    <div onclick="selectType('15 min quick consult')" class="p-3.5 rounded-xl border border-slate-200 dark:border-white/10 hover:border-[var(--theme-color)] transition-colors cursor-pointer flex items-center justify-between bg-slate-50 dark:bg-[#1C1C24]">
+                        <span class="text-sm font-bold text-slate-800 dark:text-white">15 min quick consult</span>
+                        <i class="fa-solid fa-chevron-right text-slate-400 text-xs"></i>
+                    </div>
+                `);
+            }, 300);
+        }
+
+        function selectType(type) {
+            bookingData.type = type;
+            appendUserBubble(type);
+            
+            setTimeout(() => {
+                appendAssistantBubble(`
+                    <p class="text-xs text-slate-700 dark:text-slate-200 mb-2">Here are the available times for <b>${bookingData.date}</b>:</p>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button onclick="selectTime('9:00 AM')" class="py-2.5 rounded-xl border border-slate-200 dark:border-white/10 text-sm font-bold text-slate-800 dark:text-white hover:bg-[var(--theme-color)] hover:text-white hover:border-transparent transition-all">9:00 AM</button>
+                        <button onclick="selectTime('11:30 AM')" class="py-2.5 rounded-xl border border-slate-200 dark:border-white/10 text-sm font-bold text-slate-800 dark:text-white hover:bg-[var(--theme-color)] hover:text-white hover:border-transparent transition-all">11:30 AM</button>
+                    </div>
+                `);
+            }, 300);
+        }
+
+        function selectTime(time) {
+            appendUserBubble(time);
+            
+            setTimeout(() => {
+                // SMART CONFLICT RESOLUTION (The exact medical use case)
+                if (currentIndustry === 'healthcare' && bookingData.provider === 'Dr. Viren Khatri' && time === '9:00 AM') {
+                    appendAssistantBubble(`
+                        <p class="text-xs text-slate-700 dark:text-slate-200 mb-2">
+                            <b>Dr. Viren Khatri</b> is heavily booked this morning. Their earliest available slot is at <b>11:30 AM</b>. 
+                            If you need a 9:00 AM appointment, <b>Dr. Pranay Patel</b> has an opening.
+                        </p>
+                        <div class="grid grid-cols-1 gap-2">
+                            <button onclick="confirmFinalDetails('Dr. Viren Khatri', '11:30 AM')" class="py-2 rounded-xl border border-[var(--theme-color)] text-[var(--theme-color)] text-xs font-bold hover:bg-[var(--theme-color)] hover:text-white transition-colors">Book Dr. Khatri at 11:30 AM</button>
+                            <button onclick="confirmFinalDetails('Dr. Pranay Patel', '9:00 AM')" class="py-2 rounded-xl dynamic-bg text-white text-xs font-bold shadow-md">Book Dr. Patel at 9:00 AM</button>
+                        </div>
+                    `);
+                    return;
+                }
+
+                confirmFinalDetails(bookingData.provider, time);
+            }, 300);
+        }
+
+        function confirmFinalDetails(provider, time) {
+            bookingData.provider = provider;
+            bookingData.time = time;
+            
+            appendAssistantBubble(`
+                <p class="text-xs text-slate-700 dark:text-slate-200 mb-2">Great. Please confirm your details below to finalize the booking:</p>
+                <div class="space-y-3 p-3 rounded-xl bg-slate-50 dark:bg-[#1C1C24] border border-slate-200 dark:border-white/10">
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-500 uppercase">Name *</label>
+                        <input type="text" value="Founder" class="w-full mt-1 p-2 rounded-lg bg-white dark:bg-[#272732] border border-slate-200 dark:border-white/10 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-[var(--theme-color)]">
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-500 uppercase">Email *</label>
+                        <input type="email" value="founder@stepsai.ca" class="w-full mt-1 p-2 rounded-lg bg-white dark:bg-[#272732] border border-slate-200 dark:border-white/10 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-[var(--theme-color)]">
+                    </div>
+                    <button onclick="showFinalConfirmation()" class="w-full py-2 rounded-lg dynamic-bg text-white text-xs font-bold shadow-md">Continue</button>
+                </div>
+            `);
+        }
+
+        function showFinalConfirmation() {
+            appendUserBubble("Details confirmed.");
+            setTimeout(() => {
+                appendAssistantBubble(`
+                    <div class="p-3 rounded-xl bg-slate-50 dark:bg-[#1C1C24] border border-slate-200 dark:border-white/10 space-y-2 mb-3">
+                        <div class="flex justify-between text-xs"><span class="text-slate-500">Service</span><span class="font-bold text-slate-800 dark:text-white">${bookingData.type}</span></div>
+                        <div class="flex justify-between text-xs"><span class="text-slate-500">With</span><span class="font-bold text-slate-800 dark:text-white">${bookingData.provider}</span></div>
+                        <div class="flex justify-between text-xs"><span class="text-slate-500">Date</span><span class="font-bold text-slate-800 dark:text-white">${bookingData.date}</span></div>
+                        <div class="flex justify-between text-xs"><span class="text-slate-500">Time</span><span class="font-bold text-[var(--theme-color)]">${bookingData.time}</span></div>
+                    </div>
+                    <button onclick="finishBooking()" class="w-full py-2.5 rounded-xl dynamic-bg text-white text-sm font-bold shadow-md hover:opacity-90">Confirm Booking</button>
+                `);
+            }, 300);
+        }
+
+        function finishBooking() {
+            appendUserBubble("Confirm Booking");
+            setTimeout(() => {
+                appendAssistantBubble(`
+                    <div class="p-3 bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/30 rounded-xl">
+                        <h4 class="text-xs font-bold text-emerald-600 dark:text-emerald-400 mb-1"><i class="fa-solid fa-check-circle mr-1"></i> Booking Confirmed!</h4>
+                        <p class="text-[10px] text-slate-600 dark:text-slate-300">Your appointment with <b>${bookingData.provider}</b> on <b>${bookingData.date}</b> at <b>${bookingData.time}</b> is set. We've sent a calendar invite to your email.</p>
+                    </div>
+                `);
+            }, 300);
+        }
+
+        function closeBottomSheet() {
+            document.getElementById('bookingBottomSheet').classList.add('hidden');
+        }
+
+        // --- 7. COMPANION AGENT STATE MACHINE ---
+        class CompanionAgent {
+            constructor() {
+                this.face = document.getElementById('companionFace');
+                this.glow = document.getElementById('companionGlow');
+                this.bubble = document.getElementById('companionBubble');
+                this.tooltip = document.getElementById('companionTooltip');
+                this.particles = document.getElementById('companionParticles');
+                
+                // SVG Elements
+                this.pupils = document.getElementById('companionPupils');
+                this.pupilLeft = document.getElementById('pupilLeft');
+                this.pupilRight = document.getElementById('pupilRight');
+                this.mouth = document.getElementById('companionMouth');
+                this.heart = document.getElementById('companionHeart');
+                
+                this.state = 'IDLE';
+                this.idleTimer = null;
+                this.sleepTimer = null;
+                this.lookInterval = null;
+                this.breathingInterval = null;
+                
+                this.paths = {
+                    AWAKE_L: 'M 22 45 Q 28 38 34 45',
+                    AWAKE_R: 'M 66 45 Q 72 38 78 45',
+                    HAPPY_L: 'M 22 45 Q 28 36 34 45',
+                    HAPPY_R: 'M 66 45 Q 72 36 78 45',
+                    SLEEP_L: 'M 24 47 L 32 47',
+                    SLEEP_R: 'M 68 47 L 76 47',
+                    MOUTH_IDLE: 'M 45 70 L 55 70',
+                    MOUTH_SMILE: 'M 42 68 Q 50 80 58 68',
+                    MOUTH_SLEEP: 'M 47 72 L 53 72'
+                };
+
+                this.bubble.classList.remove('bg-gradient-to-tr', 'from-slate-900', 'to-slate-800');
+                this.bubble.classList.add('bg-white'); // Logo bg is white
+
+                this.initTracking();
+                this.resetIdle();
+            }
+
+            updateTooltipContext() {
+                const ind = industries[currentIndustry];
+                if (ind && this.tooltip) {
+                    let icon = '👋';
+                    if (currentIndustry === 'healthcare') icon = '❤️';
+                    if (currentIndustry === 'realestate') icon = '🏡';
+                    if (currentIndustry === 'edtech') icon = '🎓';
+                    if (currentIndustry === 'retail') icon = '🛒';
+                    
+                    this.tooltip.innerHTML = `${icon} ${ind.appName} - Need help?`;
+                }
+            }
+
+            setExpression(l, r, m) {
+                this.pupilLeft.setAttribute('d', l);
+                this.pupilRight.setAttribute('d', r);
+                this.mouth.setAttribute('d', m);
+            }
+
+            setState(newState) {
+                if (this.state === newState && newState !== 'HOVER') return;
+                this.state = newState;
+                this.clearTimers();
+                
+                this.heart.style.opacity = '0';
+                this.heart.style.transform = 'translateY(-2px) scale(0.5)';
+
+                switch (newState) {
+                    case 'SLEEPING':
+                        this.setExpression(this.paths.SLEEP_L, this.paths.SLEEP_R, this.paths.MOUTH_SLEEP);
+                        this.bubble.style.transform = 'scale(1)';
+                        this.glow.style.opacity = '0.1';
+                        this.startBreathing();
+                        break;
+                    case 'CURIOUS':
+                        this.setExpression(this.paths.AWAKE_L, this.paths.AWAKE_R, this.paths.MOUTH_IDLE);
+                        this.bubble.style.transform = 'scale(1.05)';
+                        this.glow.style.opacity = '0.3';
+                        this.resetIdle();
+                        break;
+                    case 'IDLE':
+                        this.setExpression(this.paths.AWAKE_L, this.paths.AWAKE_R, this.paths.MOUTH_IDLE);
+                        this.bubble.style.transform = 'scale(1)';
+                        this.glow.style.opacity = '0.15';
+                        this.startLookingAround();
+                        this.startSleepTimer();
+                        break;
+                    case 'HOVER':
+                        this.setExpression(this.paths.HAPPY_L, this.paths.HAPPY_R, this.paths.MOUTH_SMILE);
+                        this.bubble.style.transform = 'scale(1.1) translateY(-4px)';
+                        this.glow.style.opacity = '0.5';
+                        break;
+                    case 'THINKING':
+                        this.setExpression(this.paths.SLEEP_L, this.paths.SLEEP_R, this.paths.MOUTH_IDLE);
+                        this.glow.classList.add('animate-pulse');
+                        break;
+                    case 'SUCCESS':
+                        this.glow.classList.remove('animate-pulse');
+                        this.setExpression(this.paths.HAPPY_L, this.paths.HAPPY_R, this.paths.MOUTH_SMILE);
+                        this.heart.style.opacity = '1';
+                        this.heart.style.transform = 'translateY(-10px) scale(1)';
+                        setTimeout(() => {
+                            if(this.state === 'SUCCESS') this.resetIdle();
+                        }, 2000);
+                        break;
+                }
+            }
+
+            startBreathing() {
+                let cycle = false;
+                this.particles.style.opacity = '1';
+                this.particles.innerText = 'Z';
+                this.breathingInterval = setInterval(() => {
+                    cycle = !cycle;
+                    this.bubble.style.transform = cycle ? 'scale(1.02)' : 'scale(1)';
+                    this.particles.innerText = cycle ? 'z' : 'Z';
+                    this.particles.style.transform = cycle ? 'translateY(-8px)' : 'translateY(-2px)';
+                }, 2000);
+            }
+
+            startLookingAround() {
+                this.lookInterval = setInterval(() => {
+                    if (this.state !== 'IDLE') return;
+                    const dir = Math.floor(Math.random() * 4);
+                    if (dir === 0) this.pupils.style.transform = 'translateX(-4px)';
+                    else if (dir === 1) this.pupils.style.transform = 'translateX(4px)';
+                    else this.pupils.style.transform = 'translateX(0px)';
+                    
+                    setTimeout(() => {
+                        if(this.state === 'IDLE') this.pupils.style.transform = 'translateX(0px)';
+                    }, 1500);
+
+                    if (Math.random() > 0.5) {
+                        setTimeout(() => {
+                            if (this.state === 'IDLE') {
+                                this.pupilLeft.setAttribute('d', this.paths.SLEEP_L);
+                                this.pupilRight.setAttribute('d', this.paths.SLEEP_R);
+                            }
+                        }, 2000);
+                        setTimeout(() => {
+                            if (this.state === 'IDLE') {
+                                this.pupilLeft.setAttribute('d', this.paths.AWAKE_L);
+                                this.pupilRight.setAttribute('d', this.paths.AWAKE_R);
+                            }
+                        }, 2150);
+                    }
+                }, 5000);
+            }
+
+            startSleepTimer() {
+                this.sleepTimer = setTimeout(() => {
+                    this.setState('SLEEPING');
+                }, 15000); 
+            }
+
+            resetIdle() {
+                if (this.state === 'THINKING' || this.state === 'SUCCESS') return;
+                this.setState('IDLE');
+            }
+
+            clearTimers() {
+                clearInterval(this.lookInterval);
+                clearInterval(this.breathingInterval);
+                clearTimeout(this.sleepTimer);
+                this.pupils.style.transform = 'translate(0px, 0px)';
+                this.particles.style.opacity = '0';
+                this.glow.classList.remove('animate-pulse');
+            }
+
+            initTracking() {
+                document.addEventListener('mousemove', (e) => {
+                    if (!this.bubble) return;
+                    const rect = this.bubble.getBoundingClientRect();
+                    const dist = Math.hypot(e.clientX - (rect.left + rect.width/2), e.clientY - (rect.top + rect.height/2));
+                    
+                    if (this.state === 'SLEEPING' && dist < 300) {
+                        this.setState('CURIOUS');
+                    } else if (this.state === 'CURIOUS' && dist >= 300) {
+                        this.resetIdle();
+                    } else if ((this.state === 'IDLE' || this.state === 'CURIOUS') && dist > 100) {
+                        clearTimeout(this.sleepTimer);
+                        this.startSleepTimer();
+                    }
+
+                    if (this.state === 'CURIOUS' || this.state === 'IDLE') {
+                        const max = 4;
+                        const x = ((e.clientX - (rect.left + rect.width/2)) / window.innerWidth) * max;
+                        const y = ((e.clientY - (rect.top + rect.height/2)) / window.innerHeight) * max;
+                        this.pupils.style.transform = `translate(${x}px, ${y}px)`;
+                    }
+                });
+            }
+        }
+        
+        window.companionAgent = null;
+        window.addEventListener('DOMContentLoaded', () => { 
+            window.companionAgent = new CompanionAgent();
+            switchIndustry('healthcare'); 
+        });
+    </script>
+</body>
+</html>
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.
