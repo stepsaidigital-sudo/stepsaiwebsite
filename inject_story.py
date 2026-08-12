@@ -5,7 +5,6 @@ with open('build_v11_compiler.py', 'r', encoding='utf-8') as f:
 
 # 1. Replace CUSTOM_SETUP
 old_setup_start = content.find('CUSTOM_SETUP = """')
-old_setup_end = content.find('"""\n\nCUSTOM_HOME_ACCORDION') + 3
 
 NEW_SETUP = '''CUSTOM_SETUP = """
 <section class="section-v2 setup-section" style="padding-top: 160px; max-width: 1400px; margin:0 auto; display:flex; gap:64px; align-items:center;">
@@ -39,9 +38,15 @@ NEW_SETUP = '''CUSTOM_SETUP = """
     </div>
   </div>
   
-  <div style="flex:1; display:flex; justify-content:center; align-items:center; min-width:300px;">
+  <div style="flex:1; display:flex; justify-content:center; align-items:center; min-width:300px; position:relative; padding: 60px;">
+    <!-- Dark Gradient Backdrop for Mockup -->
+    <div style="position:absolute; top:0; left:0; width:100%; height:100%; background: linear-gradient(135deg, #060B16 0%, #12264E 100%); border-radius: 40px; z-index: 0;"></div>
+    
+    <!-- Subtle Inner Glow for Extra Depth -->
+    <div style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); width:80%; height:80%; background: radial-gradient(circle at center, rgba(61, 116, 236, 0.4) 0%, transparent 70%); filter: blur(60px); z-index: 1; pointer-events: none;"></div>
+    
     <!-- Dark Mode Setup Mockup container -->
-    <div class="setup-mockup gsap-scale-in" style="width:100%; max-width:460px; height:500px; background:#111; border-radius:24px; border:1px solid #222; box-shadow: 0 24px 64px rgba(0,0,0,0.2); color:#fff; font-family:'Inter', sans-serif; position:relative; overflow:hidden;">
+    <div class="setup-mockup gsap-scale-in" style="width:100%; max-width:460px; height:500px; background:#111; border-radius:24px; border:1px solid #222; box-shadow: 0 24px 64px rgba(0,0,0,0.2); color:#fff; font-family:'Inter', sans-serif; position:relative; overflow:hidden; z-index:2;">
       
       <!-- STEP 1: Connect Website -->
       <div id="setup-step-1" style="position:absolute; inset:32px; display:flex; flex-direction:column; z-index:3;">
@@ -180,12 +185,15 @@ NEW_SETUP = '''CUSTOM_SETUP = """
 </style>
 """'''
 
-content = content[:old_setup_start] + NEW_SETUP + content[old_setup_end:]
+if old_setup_start != -1:
+    old_setup_end = content.find('"""', old_setup_start + 20) + 3
+    content = content[:old_setup_start] + NEW_SETUP + "\n\n" + content[old_setup_end:]
+else:
+    acc_idx = content.find('CUSTOM_HOME_ACCORDION = """')
+    if acc_idx != -1:
+        content = content[:acc_idx] + NEW_SETUP + "\n\n" + content[acc_idx:]
 
 # 2. Replace JS
-old_js_start = content.find('    // Setup Storytelling Animation')
-old_js_end = content.find('  </script>\n</body>')
-
 NEW_JS = """    // Setup Storytelling Animation
     let setupPlayed = false;
     ScrollTrigger.create({
@@ -194,7 +202,18 @@ NEW_JS = """    // Setup Storytelling Animation
       onEnter: () => {
         if(setupPlayed) return;
         setupPlayed = true;
-        let setupTl = gsap.timeline();
+        let setupTl = gsap.timeline({
+          repeat: -1,
+          repeatDelay: 2,
+          onRepeat: () => {
+            let urlEl = document.getElementById("typewriter-url");
+            if (urlEl) urlEl.textContent = "";
+            let btn = document.getElementById("mockup-proceed-btn");
+            if (btn) btn.textContent = "Connect";
+            let nameEl = document.getElementById("typewriter-name");
+            if (nameEl) nameEl.textContent = "";
+          }
+        });
         
         // --- STEP 1 ---
         let urlText = "https://habitiq.app/";
@@ -288,7 +307,16 @@ NEW_JS = """    // Setup Storytelling Animation
       }
     });\n"""
 
-content = content[:old_js_start] + NEW_JS + content[old_js_end:]
+old_js_start = content.find('    // Setup Storytelling Animation')
+if old_js_start != -1:
+    old_js_end = content.find('// Analytics Storytelling Animation')
+    if old_js_end == -1:
+        old_js_end = content.find('  </script>\n</body>')
+    content = content[:old_js_start] + NEW_JS + "\n" + content[old_js_end:]
+else:
+    script_end = content.find('  </script>\n</body>')
+    if script_end != -1:
+        content = content[:script_end] + NEW_JS + "\n" + content[script_end:]
 
 with open('build_v11_compiler.py', 'w', encoding='utf-8') as f:
     f.write(content)

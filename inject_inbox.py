@@ -4,21 +4,22 @@ with open('build_v11_compiler.py', 'r', encoding='utf-8') as f:
     content = f.read()
 
 # 1. Inject CUSTOM_ONE_INBOX
-setup_end = content.find('"""\n\nCUSTOM_HOME_ACCORDION')
+start_idx = content.find('CUSTOM_ONE_INBOX = """')
+end_idx = content.find('"""\n\nCUSTOM_HOME_ACCORDION')
 
 NEW_INBOX = '''
 CUSTOM_ONE_INBOX = """
 <section class="section-v2 inbox-section" style="padding-top: 160px; max-width: 1400px; margin:0 auto; display:flex; gap:64px; align-items:center;">
-  <div style="flex:1;">
-    <span class="gsap-fade-up" style="font-family: 'Geist Mono', monospace; font-size: 12px; color: var(--accent); letter-spacing: .2em; text-transform: uppercase; margin-bottom:16px; display:block;">YOU STAY IN CONTROL</span>
-    <h2 class="gsap-fade-up" style="font-family: 'Outfit'; font-size: clamp(40px, 4vw, 56px); margin: 0 0 24px; color: var(--text-primary); line-height:1.1;">It never sends a message you cannot read.</h2>
-    <p class="gsap-fade-up" style="font-size: 18px; color: var(--text-secondary); margin-bottom: 24px; line-height: 1.6; max-width:500px;">Every conversation, from every channel, lands in one inbox. Jump in whenever you feel like it and your agent goes quiet on that thread until you are finished.</p>
-    <p class="gsap-fade-up" style="font-size: 18px; color: var(--text-secondary); margin-bottom: 0; line-height: 1.6; max-width:500px;">You decide what it is allowed to answer. You decide where it has to stop. Every conversation is there to read. When it hands over, the whole history comes with it.</p>
-  </div>
   
-  <div style="flex:1.5; display:flex; justify-content:center; align-items:center; min-width:300px;">
+  <div style="flex:1.5; display:flex; justify-content:center; align-items:center; min-width:300px; position:relative; padding: 60px;">
+    <!-- Dark Gradient Backdrop for Mockup -->
+    <div style="position:absolute; top:0; left:0; width:100%; height:100%; background: linear-gradient(135deg, #060B16 0%, #12264E 100%); border-radius: 40px; z-index: 0;"></div>
+    
+    <!-- Subtle Inner Glow for Extra Depth -->
+    <div style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); width:80%; height:80%; background: radial-gradient(circle at center, rgba(61, 116, 236, 0.4) 0%, transparent 70%); filter: blur(60px); z-index: 1; pointer-events: none;"></div>
+    
     <!-- Inbox UI Mockup -->
-    <div class="inbox-mockup" style="opacity:0; transform:scale(0.9); width:100%; max-width:800px; height:500px; background:#fff; border-radius:24px; border:1px solid var(--border-subtle); box-shadow: 0 32px 80px rgba(0,0,0,0.08); display:flex; overflow:hidden; font-family:'Inter', sans-serif;">
+    <div class="inbox-mockup" style="opacity:0; transform:scale(0.9); width:100%; max-width:800px; height:500px; background:#fff; border-radius:24px; border:1px solid rgba(255,255,255,0.1); box-shadow: 0 32px 80px rgba(0,0,0,0.4); display:flex; overflow:hidden; font-family:'Inter', sans-serif; position:relative; z-index:2;">
       
       <!-- Sidebar -->
       <div style="width:260px; background:#fbfbfd; border-right:1px solid var(--border-subtle); display:flex; flex-direction:column;">
@@ -60,7 +61,7 @@ CUSTOM_ONE_INBOX = """
          <div style="padding:20px 24px; border-bottom:1px solid var(--border-subtle); display:flex; justify-content:space-between; align-items:center;">
             <div>
                <div style="font-weight:700; font-size:16px; color:#111;">Sarah Jenkins</div>
-               <div style="font-size:13px; color:#666;">WhatsApp • Order #8821</div>
+               <div style="font-size:13px; color:#666;">WhatsApp &bull; Order #8821</div>
             </div>
             <div class="inbox-status" style="background:#EBF3FF; color:var(--accent); padding:6px 12px; border-radius:100px; font-size:12px; font-weight:600; display:flex; align-items:center; gap:6px; transition:0.3s;">
                <span class="status-dot-h" style="display:inline-block; width:6px; height:6px; background:var(--accent); border-radius:50%;"></span> <span class="status-text">AI is reading...</span>
@@ -113,6 +114,13 @@ CUSTOM_ONE_INBOX = """
       
     </div>
   </div>
+  
+  <div style="flex:1;">
+    <span class="gsap-fade-up" style="font-family: 'Geist Mono', monospace; font-size: 12px; color: var(--accent); letter-spacing: .2em; text-transform: uppercase; margin-bottom:16px; display:block;">YOU STAY IN CONTROL</span>
+    <h2 class="gsap-fade-up" style="font-family: 'Outfit'; font-size: clamp(40px, 4vw, 56px); margin: 0 0 24px; color: var(--text-primary); line-height:1.1;">It never sends a message you cannot read.</h2>
+    <p class="gsap-fade-up" style="font-size: 18px; color: var(--text-secondary); margin-bottom: 24px; line-height: 1.6; max-width:500px;">Every conversation, from every channel, lands in one inbox. Jump in whenever you feel like it and your agent goes quiet on that thread until you are finished.</p>
+    <p class="gsap-fade-up" style="font-size: 18px; color: var(--text-secondary); margin-bottom: 0; line-height: 1.6; max-width:500px;">You decide what it is allowed to answer. You decide where it has to stop. Every conversation is there to read. When it hands over, the whole history comes with it.</p>
+  </div>
 </section>
 <style>
 @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(26, 86, 219, 0.4); } 70% { box-shadow: 0 0 0 6px rgba(26, 86, 219, 0); } 100% { box-shadow: 0 0 0 0 rgba(26, 86, 219, 0); } }
@@ -120,7 +128,13 @@ CUSTOM_ONE_INBOX = """
 </style>
 """
 '''
-content = content[:setup_end] + NEW_INBOX + content[setup_end:]
+if start_idx != -1:
+    end_idx = content.find('"""', start_idx + 25) + 3
+    content = content[:start_idx] + NEW_INBOX + "\n\n" + content[end_idx:]
+else:
+    acc_idx = content.find('CUSTOM_HOME_ACCORDION = """')
+    if acc_idx != -1:
+        content = content[:acc_idx] + NEW_INBOX + "\n\n" + content[acc_idx:]
 
 # 2. Inject python rendering logic
 logic_marker = 'if data["route"] == "" and "Setup" in block["title"]:\\n            html_content += CUSTOM_SETUP\\n            continue'
@@ -142,7 +156,17 @@ JS_INBOX = """
       onEnter: () => {
         if(inboxPlayed) return;
         inboxPlayed = true;
-        let tl = gsap.timeline();
+        let tl = gsap.timeline({
+          repeat: -1,
+          repeatDelay: 2,
+          onRepeat: () => {
+             let st = document.querySelector(".status-text"); if(st) st.textContent = "AI is reading...";
+             let pd = document.querySelector(".pulse-dot"); if(pd) pd.style.background = "var(--accent)";
+             let th = document.querySelector(".tag-handover"); if(th) th.style.opacity = "0";
+             let el = document.getElementById("typewriter-human"); if(el) el.textContent = "";
+             let inputPh = document.querySelector(".input-placeholder"); if(inputPh) inputPh.style.opacity = "1";
+          }
+        });
         
         tl.to(".inbox-mockup", { opacity: 1, scale: 1, duration: 0.8, ease: "power3.out" })
           .to({}, {duration: 0.8}) // reading the question
@@ -190,7 +214,11 @@ JS_INBOX = """
       }
     });
 """
-content = content.replace(js_marker, JS_INBOX + js_marker)
+script_end = content.find('  </script>\n</body>')
+if script_end != -1:
+    content = content[:script_end] + JS_INBOX + "\n" + content[script_end:]
+else:
+    print("Could not find closing script tag to inject JS_INBOX!")
 
 with open('build_v11_compiler.py', 'w', encoding='utf-8') as f:
     f.write(content)

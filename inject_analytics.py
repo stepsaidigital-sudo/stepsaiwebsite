@@ -83,7 +83,10 @@ JS_ANALYTICS = """
       onEnter: () => {
         if(analyticsPlayed) return;
         analyticsPlayed = true;
-        let tl = gsap.timeline();
+        let tl = gsap.timeline({
+          repeat: -1,
+          repeatDelay: 2
+        });
         
         tl.to(".analytics-card", { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" })
           .to({}, {duration: 0.4})
@@ -118,11 +121,11 @@ JS_ANALYTICS = """
     });
 """
 
-js_idx = content.find('// Inbox Storytelling Animation')
-if js_idx != -1:
-    content = content[:js_idx] + JS_ANALYTICS + "\n" + content[js_idx:]
+script_end = content.find('  </script>\n</body>')
+if script_end != -1:
+    content = content[:script_end] + JS_ANALYTICS + "\n" + content[script_end:]
 else:
-    print("JS marker not found!")
+    print("Could not find closing script tag to inject JS_ANALYTICS!")
 
 with open('build_v11_compiler.py', 'w', encoding='utf-8') as f:
     f.write(content)

@@ -6,22 +6,15 @@ with open('build_v11_compiler.py', 'r', encoding='utf-8') as f:
 CUSTOM_COPILOT = """
 CUSTOM_COPILOT = \"\"\"
 <section class="section-v2 copilot-section" style="padding-top: 160px; padding-bottom: 160px; max-width: 1400px; margin:0 auto; display:flex; gap:64px; align-items:center;">
-  <div style="flex:1;">
-    <span class="gsap-fade-up" style="font-family: 'Geist Mono', monospace; font-size: 12px; color: var(--accent); letter-spacing: .2em; text-transform: uppercase; margin-bottom:16px; display:block;">INTERNAL COPILOT</span>
-    <h2 class="gsap-fade-up" style="font-family: 'Outfit'; font-size: clamp(40px, 4vw, 56px); margin: 0 0 24px; color: var(--text-primary); line-height:1.1;">The same brain, pointed inwards.</h2>
-    <p class="gsap-fade-up" style="font-size: 18px; color: var(--text-secondary); margin-bottom: 24px; line-height: 1.6; max-width:500px;">Your team asks it where the leave policy lives, what you agreed with that client in March, which version of the deck is the current one.</p>
-    <p class="gsap-fade-up" style="font-size: 18px; color: var(--text-secondary); margin-bottom: 32px; line-height: 1.6; max-width:500px;">It looks through everything you have connected, answers, and shows you exactly which document it got that from.</p>
+  <div style="flex:1.2; display:flex; justify-content:center; align-items:center; min-width:300px; position:relative; padding: 60px;">
+    <!-- Dark Gradient Backdrop for Mockup -->
+    <div style="position:absolute; top:0; left:0; width:100%; height:100%; background: linear-gradient(135deg, #060B16 0%, #12264E 100%); border-radius: 40px; z-index: 0;"></div>
     
-    <a href="#" class="gsap-fade-up" style="display:inline-flex; align-items:center; gap:8px; color:var(--text-primary); font-weight:600; text-decoration:none; border-bottom:1px solid var(--text-primary); padding-bottom:4px;">
-       See Internal Copilot
-       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"></path><path d="M12 5l7 7-7 7"></path></svg>
-    </a>
-  </div>
-  
-  <div style="flex:1.2; display:flex; justify-content:center; align-items:center; min-width:300px; position:relative;">
+    <!-- Subtle Inner Glow for Extra Depth -->
+    <div style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); width:80%; height:80%; background: radial-gradient(circle at center, rgba(61, 116, 236, 0.4) 0%, transparent 70%); filter: blur(60px); z-index: 1; pointer-events: none;"></div>
     
     <!-- Copilot Mockup -->
-    <div class="copilot-mockup" style="opacity:0; transform:scale(0.9); width:100%; max-width:640px; background:#1f2228; border-radius:24px; border:1px solid #3a3f4a; box-shadow: 0 32px 80px rgba(0,0,0,0.4); padding:32px; display:flex; flex-direction:column; gap:24px; font-family:'Inter', sans-serif;">
+    <div class="copilot-mockup" style="opacity:0; transform:scale(0.9); width:100%; max-width:640px; background:#1f2228; border-radius:24px; border:1px solid #3a3f4a; box-shadow: 0 32px 80px rgba(0,0,0,0.4); padding:32px; display:flex; flex-direction:column; gap:24px; font-family:'Inter', sans-serif; position:relative; z-index:2;">
        
        <!-- Search Bar -->
        <div style="display:flex; align-items:center; gap:16px; background:#111; border:1px solid #333; border-radius:16px; padding:16px 24px;">
@@ -53,7 +46,7 @@ CUSTOM_COPILOT = \"\"\"
        
        <!-- Answer Result -->
        <div class="cp-result" style="height:0; overflow:hidden; opacity:0; display:flex; flex-direction:column; gap:16px;">
-          <div style="background:#2A2D35; border:1px solid #3a3f4a; border-radius:16px; padding:24px; position:relative;">
+          <div style="background:#2A2D35; border:1px solid #3a3f4a; border-radius:16px; padding:24px; position:relative; margin-top:12px;">
              <div style="position:absolute; top:-12px; left:24px; background:linear-gradient(45deg, #1A56DB, #8B5CF6); padding:4px 12px; border-radius:100px; font-size:11px; font-weight:700; color:#fff; letter-spacing:0.05em;">ANSWER</div>
              <p style="color:#fff; font-size:15px; line-height:1.6; margin:0; margin-top:8px;">
                 We agreed to a <strong style="color:var(--accent);">10% discount on the Enterprise tier</strong> for Acme Corp, starting April 1st. They also requested a custom SLA, which was approved by Legal.
@@ -84,14 +77,30 @@ CUSTOM_COPILOT = \"\"\"
        
     </div>
   </div>
+  <div style="flex:1;">
+    <span class="gsap-fade-up" style="font-family: 'Geist Mono', monospace; font-size: 12px; color: var(--accent); letter-spacing: .2em; text-transform: uppercase; margin-bottom:16px; display:block;">INTERNAL COPILOT</span>
+    <h2 class="gsap-fade-up" style="font-family: 'Outfit'; font-size: clamp(40px, 4vw, 56px); margin: 0 0 24px; color: var(--text-primary); line-height:1.1;">The same brain, pointed inwards.</h2>
+    <p class="gsap-fade-up" style="font-size: 18px; color: var(--text-secondary); margin-bottom: 24px; line-height: 1.6; max-width:500px;">Your team asks it where the leave policy lives, what you agreed with that client in March, which version of the deck is the current one.</p>
+    <p class="gsap-fade-up" style="font-size: 18px; color: var(--text-secondary); margin-bottom: 32px; line-height: 1.6; max-width:500px;">It looks through everything you have connected, answers, and shows you exactly which document it got that from.</p>
+    
+    <a href="#" class="gsap-fade-up" style="display:inline-flex; align-items:center; gap:8px; color:var(--text-primary); font-weight:600; text-decoration:none; border-bottom:1px solid var(--text-primary); padding-bottom:4px;">
+       See Internal Copilot
+       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"></path><path d="M12 5l7 7-7 7"></path></svg>
+    </a>
+  </div>
 </section>
 \"\"\"
 """
 
 # Inject CUSTOM_COPILOT before CUSTOM_HOME_ACCORDION
-acc_idx = content.find('CUSTOM_HOME_ACCORDION = """')
-if acc_idx != -1:
-    content = content[:acc_idx] + CUSTOM_COPILOT + "\n\n" + content[acc_idx:]
+cp_idx = content.find('CUSTOM_COPILOT = """')
+if cp_idx != -1:
+    cp_end = content.find('"""', cp_idx + 22) + 3
+    content = content[:cp_idx] + CUSTOM_COPILOT + "\n\n" + content[cp_end:]
+else:
+    acc_idx = content.find('CUSTOM_HOME_ACCORDION = """')
+    if acc_idx != -1:
+        content = content[:acc_idx] + CUSTOM_COPILOT + "\n\n" + content[acc_idx:]
 
 # Inject logic condition in the blocks loop
 logic_marker = 'if data["route"] == "" and "Analytics" in block["title"]:\n            html_content += CUSTOM_ANALYTICS\n            continue'
@@ -115,7 +124,14 @@ JS_COPILOT = """
       onEnter: () => {
         if(copilotPlayed) return;
         copilotPlayed = true;
-        let tl = gsap.timeline();
+        let tl = gsap.timeline({
+          repeat: -1,
+          repeatDelay: 2,
+          onRepeat: () => {
+            let el = document.getElementById("cp-typewriter"); if (el) el.textContent = "";
+            let c = document.querySelector(".cp-cursor"); if (c) c.style.display = "inline-block";
+          }
+        });
         
         // 1. Enter mockup
         tl.to(".copilot-mockup", { opacity: 1, scale: 1, duration: 0.8, ease: "power3.out" })
@@ -159,11 +175,11 @@ JS_COPILOT = """
     });
 """
 
-js_idx = content.find('// Analytics Storytelling Animation')
-if js_idx != -1:
-    content = content[:js_idx] + JS_COPILOT + "\n" + content[js_idx:]
+script_end = content.find('  </script>\n</body>')
+if script_end != -1:
+    content = content[:script_end] + JS_COPILOT + "\n" + content[script_end:]
 else:
-    print("JS marker not found!")
+    print("Could not find closing script tag to inject JS_COPILOT!")
 
 with open('build_v11_compiler.py', 'w', encoding='utf-8') as f:
     f.write(content)

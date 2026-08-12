@@ -6,16 +6,13 @@ with open('build_v11_compiler.py', 'r', encoding='utf-8') as f:
 # 1. New HTML for CUSTOM_ONE_INBOX
 NEW_INBOX_HTML = """CUSTOM_ONE_INBOX = \"\"\"
 <section class="section-v2 inbox-section" style="padding-top: 160px; max-width: 1400px; margin:0 auto; display:flex; gap:64px; align-items:center;">
-  <div style="flex:1;">
-    <span class="gsap-fade-up" style="font-family: 'Geist Mono', monospace; font-size: 12px; color: var(--accent); letter-spacing: .2em; text-transform: uppercase; margin-bottom:16px; display:block;">YOU STAY IN CONTROL</span>
-    <h2 class="gsap-fade-up" style="font-family: 'Outfit'; font-size: clamp(40px, 4vw, 56px); margin: 0 0 24px; color: var(--text-primary); line-height:1.1;">It never sends a message you cannot read.</h2>
-    <p class="gsap-fade-up" style="font-size: 18px; color: var(--text-secondary); margin-bottom: 24px; line-height: 1.6; max-width:500px;">Every conversation, from every channel, lands in one inbox. Jump in whenever you feel like it and your agent goes quiet on that thread until you are finished.</p>
-    <p class="gsap-fade-up" style="font-size: 18px; color: var(--text-secondary); margin-bottom: 0; line-height: 1.6; max-width:500px;">You decide what it is allowed to answer. You decide where it has to stop. Every conversation is there to read. When it hands over, the whole history comes with it.</p>
-  </div>
   
-  <div style="flex:1.5; display:flex; justify-content:center; align-items:center; min-width:300px;">
+  <div style="flex:1.5; display:flex; justify-content:center; align-items:center; min-width:300px; position:relative;">
+    <!-- Background Glow -->
+    <div style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); width:120%; height:120%; background: radial-gradient(circle at center, var(--accent) 0%, transparent 60%); filter: blur(80px); opacity: 0.15; z-index: 0; pointer-events: none;"></div>
+    
     <!-- Inbox UI Mockup -->
-    <div class="inbox-mockup" style="opacity:0; transform:scale(0.9); width:100%; max-width:800px; height:500px; background:#fff; border-radius:24px; border:1px solid var(--border-subtle); box-shadow: 0 32px 80px rgba(0,0,0,0.08); display:flex; overflow:hidden; font-family:'Inter', sans-serif;">
+    <div class="inbox-mockup" style="opacity:0; transform:scale(0.9); width:100%; max-width:800px; height:500px; background:#fff; border-radius:24px; border:1px solid var(--border-subtle); box-shadow: 0 32px 80px rgba(0,0,0,0.08); display:flex; overflow:hidden; font-family:'Inter', sans-serif; position:relative; z-index:1;">
       
       <!-- Sidebar -->
       <div style="width:260px; background:#fbfbfd; border-right:1px solid var(--border-subtle); display:flex; flex-direction:column;">
@@ -199,6 +196,13 @@ NEW_INBOX_HTML = """CUSTOM_ONE_INBOX = \"\"\"
       </div>
       
     </div>
+  </div>
+  
+  <div style="flex:1;">
+    <span class="gsap-fade-up" style="font-family: 'Geist Mono', monospace; font-size: 12px; color: var(--accent); letter-spacing: .2em; text-transform: uppercase; margin-bottom:16px; display:block;">YOU STAY IN CONTROL</span>
+    <h2 class="gsap-fade-up" style="font-family: 'Outfit'; font-size: clamp(40px, 4vw, 56px); margin: 0 0 24px; color: var(--text-primary); line-height:1.1;">It never sends a message you cannot read.</h2>
+    <p class="gsap-fade-up" style="font-size: 18px; color: var(--text-secondary); margin-bottom: 24px; line-height: 1.6; max-width:500px;">Every conversation, from every channel, lands in one inbox. Jump in whenever you feel like it and your agent goes quiet on that thread until you are finished.</p>
+    <p class="gsap-fade-up" style="font-size: 18px; color: var(--text-secondary); margin-bottom: 0; line-height: 1.6; max-width:500px;">You decide what it is allowed to answer. You decide where it has to stop. Every conversation is there to read. When it hands over, the whole history comes with it.</p>
   </div>
 </section>
 <style>

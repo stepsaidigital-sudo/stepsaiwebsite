@@ -92,13 +92,29 @@ inject_logic = """
         if data["route"] == "" and "Four Agents" in block["title"]:
             html_content += CUSTOM_FOUR_AGENTS
             continue
+            
+        if data["route"] == "" and "Setup" in block["title"]:
+            html_content += CUSTOM_SETUP
+            continue
+            
+        if data["route"] == "" and "One Inbox" in block["title"]:
+            html_content += CUSTOM_ONE_INBOX
+            continue
+            
+        if data["route"] == "" and "Analytics" in block["title"]:
+            html_content += CUSTOM_ANALYTICS
+            continue
+            
+        if data["route"] == "" and "Internal Copilot" in block["title"]:
+            html_content += CUSTOM_COPILOT
+            continue
 """
 
 # I need to rewrite the loop part for the home page since the previous v10 compiler stripped the home page loop logic out to just handle the 3 pages.
 # Let's completely rewrite the compiler script to be safe.
-"""
 
-new_code = """import os
+new_code = """# -*- coding: utf-8 -*-
+import os
 import re
 
 GLOBAL_HEAD = \"\"\"<!DOCTYPE html>
@@ -341,14 +357,7 @@ def render_s05(kicker, h1, p):
     \"\"\"
 
 FOOTER = \"\"\"
-  <!-- S03 CTA Band -->
-  <section class="cta-band">
-    <h2>Somebody is typing right now.</h2>
-    <div style="display:flex; justify-content:center; gap:16px;">
-      <a href="{root_prefix}partners/apply/index.html"><button class="btn-primary">Start free trial</button></a>
-      <button class="btn-outline">Book a demo</button>
-    </div>
-  </section>
+
   <footer class="footer">
     <div class="footer-container">
       <div class="footer-col" style="grid-column: span 2;">
@@ -399,10 +408,10 @@ FOOTER = \"\"\"
 \"\"\"
 
 decks = [
-    r"C:\Users\user\Downloads\StepsAI-Copy-Deck.md",
-    r"C:\Users\user\Downloads\StepsAI-Copy-Deck-v2.md",
-    r"C:\Users\user\Downloads\StepsAI-Copy-Deck-v3.md",
-    r"C:\Users\user\Downloads\StepsAI-Copy-Deck-v4-FINAL.md"
+    r"C:/Users/user/Downloads/StepsAI-Copy-Deck.md",
+    r"C:/Users/user/Downloads/StepsAI-Copy-Deck-v2.md",
+    r"C:/Users/user/Downloads/StepsAI-Copy-Deck-v3.md",
+    r"C:/Users/user/Downloads/StepsAI-Copy-Deck-v4-FINAL.md"
 ]
 
 all_content = ""
@@ -538,6 +547,26 @@ for p in pages:
             
         if data["route"] == "" and "Four Agents" in block["title"]:
             html_content += CUSTOM_FOUR_AGENTS
+            continue
+            
+        if data["route"] == "" and "Setup" in block["title"]:
+            try: html_content += CUSTOM_SETUP
+            except NameError: pass
+            continue
+            
+        if data["route"] == "" and "One Inbox" in block["title"]:
+            try: html_content += CUSTOM_ONE_INBOX
+            except NameError: pass
+            continue
+            
+        if data["route"] == "" and "Analytics" in block["title"]:
+            try: html_content += CUSTOM_ANALYTICS
+            except NameError: pass
+            continue
+            
+        if data["route"] == "" and "Internal Copilot" in block["title"]:
+            try: html_content += CUSTOM_COPILOT
+            except NameError: pass
             continue
             
         is_faq = "FAQ" in block["title"].upper()
